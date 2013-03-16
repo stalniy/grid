@@ -17,7 +17,7 @@ module Grid
     end
 
     def command(type)
-      Command.find(type)
+      ::Grid::Api::Command.find(type)
     end
 
     def max_page(params = {})
@@ -26,10 +26,10 @@ module Grid
 
     def build_with!(params)
       params.fetch(:cmd).each do |cmd|
-        run_command!(cmd, params) unless command(cmd).is_a?(Command::Batch)
+        run_command!(cmd, params) unless command(cmd).is_a?(::Grid::Api::Command::Batch)
       end
       self
-    rescue Command::UnknownCommandError, Command::CommandWrongContext => e
+    rescue ::Grid::Api::Command::UnknownCommandError, ::Grid::Api::Command::CommandWrongContext => e
       raise MessageError.new(e.message).tap{ |m| m.status(e.status) }
     end
 
