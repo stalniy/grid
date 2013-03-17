@@ -1,9 +1,9 @@
-module Grid
-  require 'grid/version'
-  require 'grid/builder'
-  require 'grid/api'
-  require 'grid/config'
+require 'grid/version'
+require 'grid/api'
+require 'grid/builder'
+require 'grid/config'
 
+module Grid
   def self.configure
     Config.new.tap{ |c| yield c }.apply
   end

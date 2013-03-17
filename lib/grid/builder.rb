@@ -1,3 +1,7 @@
+Dir.chdir(File.dirname(__FILE__)) do
+  Dir['builder/**/*.rb'].each{ |f| require f }
+end
+
 module Grid
   class Builder
     private_class_method :new

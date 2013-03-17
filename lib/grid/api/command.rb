@@ -1,6 +1,9 @@
-module Grid
-  Dir["command/**/*.rb"].each{ |f| require f }
+require 'grid/api/command/batch'
+Dir.chdir(File.dirname(__FILE__)) do
+  Dir['command/**/*.rb'].each{ |f| require f }
+end
 
+module Grid
   class Api::Command
 
     def self.find(cmd)
@@ -18,10 +21,10 @@ module Grid
 
     def self.build!(cmd)
       scope = scopes.detect do |scope|
-        "#{scope}/#{cmd}".camelize.constantize rescue nil
+        classify!("#{scope}/#{cmd}") rescue nil
       end
       raise UnknownCommandError, %{ Command "#{cmd}" is unknown" } if scope.nil?
-      "#{scope}/#{cmd}".camelize.constantize.new
+      classify!("#{scope}/#{cmd}").new
     end
 
     def execute_on(relation, params)
@@ -36,6 +39,15 @@ module Grid
 
     def configure(relation, params)
       params
+    end
+
+    def self.classify!(path)
+      constant = Object
+      path.split('/').each do |name|
+        name = name.capitalize.gsub(/_([a-z])/){ $1.capitalize }
+        constant = constant.const_defined?(name) ? constant.const_get(name) : constant.const_missing(name)
+      end
+      constant
     end
 
     class UnknownCommandError < StandardError
