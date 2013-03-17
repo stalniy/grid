@@ -1,4 +1,5 @@
 module Grid
+  require 'grid/version'
   require 'grid/config'
   require 'grid/api'
   require 'grid/api/command'
