@@ -10,8 +10,9 @@ module Grid
     end
 
     def assemble_with(params)
-      api.build_with!(configure params.merge(context.options))
-      stringify json_api(params[:with_meta].present?)
+      options = configure(params.merge context.options)
+      api.build_with!(options)
+      stringify json_api(options)
     rescue ::Grid::Api::MessageError => e
       stringify json_api_message(e)
     end
@@ -27,11 +28,11 @@ module Grid
 
   private
 
-    def json_api(with_meta = false)
+    def json_api(options)
       {}.tap do |json|
-        json[:meta], json[:columns] = context.options, context.visible_columns if with_meta
-        json.merge! :max_page => api.max_page(:per_page => context.options[:per_page]),
-          :items => as_json
+        json[:meta], json[:columns] = context.options, context.visible_columns if options[:with_meta]
+        json[:max_page] = api.max_page(:per_page => options[:per_page]) unless options[:per_page] === false
+        json[:items] = as_json
       end
     end
 
@@ -67,7 +68,7 @@ module Grid
     def configure(params)
       params.tap do |o|
         o[:cmd] = Array.wrap(o[:cmd])
-        o[:cmd] << 'paginate'
+        o[:cmd].unshift('paginate') unless params[:per_page] === false
         o[:cmd].uniq!
         o[:searchable_columns] = context.column_names_marked_as(:searchable)
       end

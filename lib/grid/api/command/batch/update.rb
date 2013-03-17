@@ -7,7 +7,7 @@ module Grid
     end
 
     def run_on(relation, params)
-      record_ids = params[:items].map{ |k, row| row['id'] }
+      record_ids = params[:items].map{ |row| row['id'] }
       records = relation.where(:id => record_ids).index_by(&:id)
 
       params[:items].map do |k, row|
