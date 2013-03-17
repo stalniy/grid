@@ -1,9 +1,8 @@
 Yet Another Grid
 =========
 
-This plugin is designed to provide API to build ActiveRecord::Relation and to return
-specified information in json format. So, it makes easy to return information from database
-and display it using JavaScript MV* based frameworks such as Knockout, Backbone, Angular, etc.
+This plugin is designed to provide API for building json based on ActiveRecord::Relation objects.
+So, it makes much easier to fetch information from database and display it using JavaScript MV* based frameworks such as Knockout, Backbone, Angular, etc.
 
 ## Template Builder
 
@@ -44,20 +43,20 @@ API is based on commands, so each command can execute any operation on any Activ
 There are few predefined commands: `paginate, search, sort, filter, batch/update, batch/remove`
 
 To retrieve data client has to send GET request with the following parameters:
-- *cmd*: list of commands which should be applied (optional, by default uses `paginate`)
-- *query*: search query (required for `search` command)
-- *field*: specifies by which column information should be sorted (required for `sort` command)
-- *order*: specifies sort order (optional for `sort` command, by default `asc`)
-- *filters*: hash of filters (required for `filter` command). Examples:
+- **cmd**: list of commands which should be applied (optional, by default uses `paginate`)
+- **query**: search query (required for `search` command)
+- **field**: specifies by which column information should be sorted (required for `sort` command)
+- **order**: specifies sort order (optional for `sort` command, by default `asc`)
+- **filters**: hash of filters (required for `filter` command). Examples:
     - `{ :name => "test" }` => `name LIKE "%test%"`
     - `{ :created_at => { :from => ... , :to => ... } }` => `created_at >= :from AND created_at <= :to`
-      from/to should be timestamps or dates which can be parsed with Date::DATE_FORMATS[:date] format
+      *from*/*to* params should be timestamps or dates which can be parsed with Date::DATE_FORMATS[:date] format
     - `{ :id => [1, 2, 3] }` => `id IN (1,2,3)`
-- *per_page*: specifies number of items for one page of data (optional by default 10)
+- **per_page**: specifies number of items for one page of data (optional by default 10)
 
 Example: # TODO: there should be example of url
 
-#### Grid builder do not respond to batch commands
+#### Grid builder do not respond to batch commands!!!
 
 Batch commands can't be processed with Grid::Builder. So, if there is a need to run batch command use the following syntax:
 
@@ -67,14 +66,15 @@ Batch commands can't be processed with Grid::Builder. So, if there is a need to 
 Each batch command return an array of processed records, so it's possible to build response:
 
     records = Grid.build_for(@articles).run_command!('batch/update', :items => params[:articles])
+
     response = { :status => :success, :message => "Articles has been successfully updated"}
     response[:message] = recors.select(&:invalid?).map{ |r| r.errors.full_messages }.join(". ") if records.any?(&:invalid?)
     render :json => response
 
-So, *update* command requires only one parameter "items" - an array of hashes, each hash should have integer value with key 'id'.
-*remove* command requires one parameter "item_ids" - an array of integers
+So, **batch/update** command requires only one parameter "items" - an array of hashes, each hash should have integer value with key 'id'.
+And **batch/remove** command requires one parameter "item_ids" - an array of integers
 
-It's also possible to get information about columns and/or to add meta data in response.
+It's also possible to get information about columns and/or to add meta data into response.
 To get this information client should add *with_meta=1* into GET parameters.
 Example: # TODO: url
 
@@ -90,6 +90,7 @@ Example: # TODO: url
     end
 
 This example produces json:
+
     {
       "meta": {
         "server_time": "2013-03-17 02:11:05 +0200"
@@ -117,3 +118,8 @@ This example produces json:
     }
 
 
+# TODO:
+1. Describe about custom commands
+2. Add url examples
+3. Describe about `searchable_columns` option
+4. Describe about nested scopes
