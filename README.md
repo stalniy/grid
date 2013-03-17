@@ -3,22 +3,26 @@ Yet Another Grid
 
 # !!! Under development !!!
 
-This plugin is designed to provide API for building json based on ActiveRecord::Relation objects.
+This plugin is designed to provide API for building json based on `ActiveRecord::Relation` objects.
 It makes much easier to fetch information from database for displaying it using JavaScript MV* based frameworks such as Knockout, Backbone, Angular, etc.
 
 ## API
 
-The API is based on term commands, so each command is like a client action which can do anything with ActiveRecord::Relation.
+The API is based on term commands, so each command is like a client action which can do anything with `ActiveRecord::Relation`.
 The general request looks like:
 
-  your.domain.com/route.json?**with_meta**=1&**page**=1&**cmd**[]=sort&**field**=title&**order**=desc&**cmd**[]=search&**query**=test&**cmd**[]=filter&**filters**[created_at][from]=1363513288&**filters**[created_at][to]=1363513288
+    http://your.domain.com/route.json? with_meta=1 &
+      page=1 &
+      cmd[]=sort & field=title & order=desc &
+      cmd[]=search & query=test &
+      cmd[]=filter & filters[created_at][from]=1363513288 & filters[created_at][to]=1363513288
 
-Each parameter (in bold) relates to options of some command. Then only exception is **with_meta** parameter which is used to retrieve extra meta information of grid.
+Each parameter relates to options of some command. Then only exception is **with_meta** parameter which is used to retrieve extra meta information of grid.
 
 ### Commands
 
 There are 2 types of commands: batch commands (e.g. *update, remove*) and stackable commands (e.g. *search*, *paginate*, *sort*, *filter*).
-Stackable commands can be processed per one request by **Grid::Builder** (method `execute_on` of such commands returns ActiveRecord::Relation).
+Stackable commands can be processed per one request by **Grid::Builder** (method `execute_on` of such commands returns `ActiveRecord::Relation`).
 Batch commands can't be processed by **Grid::Builder** even more they will be ignored (method `execute_on` returns array of processed records).
 There are few predefined commands: `paginate`, `search`, `sort`, `filter`, `batch/update`, `batch/remove`.
 
