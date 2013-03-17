@@ -10,7 +10,7 @@ module Grid
       record_ids = params[:items].map{ |row| row['id'] }
       records = relation.where(:id => record_ids).index_by(&:id)
 
-      params[:items].map do |k, row|
+      params[:items].map do |row|
         record = records[row['id'].to_i]
         record.tap{ |r| r.update_attributes(row.except('id')) } unless record.nil?
       end.compact

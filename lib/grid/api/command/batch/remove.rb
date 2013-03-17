@@ -7,7 +7,7 @@ module Grid
     end
 
     def run_on(relation, params)
-      relation.where(:id => params[:item_ids]).destroy_all
+      relation.where(relation.scoped.table.primary_key.in(params[:item_ids])).destroy_all
     end
   end
 end
