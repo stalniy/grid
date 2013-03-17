@@ -1,8 +1,10 @@
 Grid.configure do |config|
-  # TODO: will not work in development mode when model's file is reloaded
-  config.commands_lookup_scopes += %w{ test/a/b new/ba/s }
-  config.default_max_per_page = 5
-  config.prettify_json = true
+  # Specifies scopes for custom commands
+  # config.commands_lookup_scopes += %w{ command_scope_1 command_scope_2 }
 
-  ActionView::Template.register_template_handler :grid_builder, ::Grid::Builder if defined?(ActionView::Template)
+  # Default number of items per page for pagination
+  config.default_max_per_page = 25
+
+  # Print json response with new lines and tabs
+  config.prettify_json = ActionView::Base.pretty_print_json
 end

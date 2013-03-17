@@ -42,7 +42,7 @@ module Grid
       end
     end
 
-    class CommandWrongContext < StandardError
+    class BadContext < StandardError
       def status
         'error'
       end
