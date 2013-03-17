@@ -1,8 +1,3 @@
-require 'grid/api/command/batch'
-Dir.chdir(File.dirname(__FILE__)) do
-  Dir['command/**/*.rb'].each{ |f| require f }
-end
-
 module Grid
   class Api::Command
 
