@@ -1,4 +1,6 @@
 module Grid
+  Dir["command/**/*.rb"].each{ |f| require f }
+
   class Api::Command
 
     def self.find(cmd)

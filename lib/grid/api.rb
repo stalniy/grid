@@ -1,4 +1,6 @@
 module Grid
+  require 'api/command'
+
   class Api
     attr_accessor :relation, :options
 
