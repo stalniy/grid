@@ -320,7 +320,7 @@ This example builds the next response:
 }
 ```
 If you need to standardize output you can specify `:as` option - the column name for nested grid (e.g. if you specify `:as => :children` then *articles* key will be substituted with *children* key).
-Also there are to conditional options `:unless` and `:if` which accepts lambda or symbol.
+Also there are 2 conditional options `:unless` and `:if` which accepts lambda or symbol.
 If you specify symbol as condition will be used column value with such name (in this case it's important that column is defined before scope).
 If you need some custom logic to detect if scope should be created for such row or not you can pass lambda.
 
