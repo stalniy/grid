@@ -39,6 +39,14 @@ module Grid
     def to_str
       @_view_handler.assemble_with(@_scope.params)
     end
+    
+    def to_s
+      self.to_str
+    end
+    
+    def handler
+      @_view_handler
+    end
 
     def method_missing(name, *args, &block)
       if @_scope.respond_to?(name)
