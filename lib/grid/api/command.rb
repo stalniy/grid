@@ -16,10 +16,10 @@ module Grid
 
     def self.build!(cmd)
       scope = scopes.detect do |scope|
-        classify!("#{scope}/#{cmd}") rescue nil
+        "#{scope}/#{cmd}".camelize.constantize rescue nil
       end
       raise UnknownCommandError, %{ Command "#{cmd}" is unknown" } if scope.nil?
-      classify!("#{scope}/#{cmd}").new
+      "#{scope}/#{cmd}".camelize.constantize.new
     end
 
     def execute_on(relation, params)
@@ -34,15 +34,6 @@ module Grid
 
     def configure(relation, params)
       params
-    end
-
-    def self.classify!(path)
-      constant = Object
-      path.split('/').each do |name|
-        name = name.capitalize.gsub(/_([a-z])/){ $1.capitalize }
-        constant = constant.const_defined?(name) ? constant.const_get(name) : constant.const_missing(name)
-      end
-      constant
     end
 
     class UnknownCommandError < StandardError
