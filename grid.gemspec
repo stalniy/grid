@@ -31,5 +31,6 @@ EOF
 
   # specify any dependencies here; for example:
   s.add_development_dependency "bundler", ">= 1.0.0"
-  s.add_development_dependency "rspec", "~> 2.3"
+  s.add_development_dependency "rspec", "~> 2.13"
+  s.add_development_dependency "rspec-mocks", "~> 2.13"
 end
