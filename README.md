@@ -34,7 +34,7 @@ grid_for @articles :per_page => 25 do
 
   column :title
   column(:created_at){ |r| r.created_at.to_s(:date) }
-  column(:author){ |r| r.aurhor.full_name }
+  column(:author){ |r| r.author.full_name }
 end
 ```
 
