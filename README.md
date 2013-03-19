@@ -11,6 +11,33 @@ It makes much easier to fetch information from database for displaying it using 
 First of all specify grid in your Gemfile and run `bundle install`.
 After gem is installed you need to run `rails generate grid:install`. This will generate grid initializer file with basic configuration.
 
+## Usage
+
+Controller: 
+```ruby
+# app/controllers/articles_controller.rb
+class ArticlesController < ApplicationController
+  respond_to :json
+
+  def index
+    @articles = Article.published
+    respond_with @articles
+  end
+end
+```
+
+View:
+```ruby
+# app/views/articles/index.json.grid_builder
+grid_for @articles :per_page => 25 do
+  searchable_columns :title
+
+  column :title
+  column(:created_at){ |r| r.created_at.to_s(:date) }
+  column(:author){ |r| r.aurhor.full_name }
+end
+```
+
 ## API
 
 The API is based on commands. Term *command* describes client's action which can be simple or complicated as well.
