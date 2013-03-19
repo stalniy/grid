@@ -25,7 +25,7 @@ EOF
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
-  s.add_dependency 'activesupport', '>= 2.0.0'
+  s.add_dependency 'activerecord', '>= 3.0'
   s.add_dependency 'json'
 
   # specify any dependencies here; for example:
