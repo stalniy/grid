@@ -33,8 +33,9 @@ grid_for @articles :per_page => 25 do
   searchable_columns :title
 
   column :title
-  column(:created_at){ |r| r.created_at.to_s(:date) }
-  column(:author){ |r| r.author.full_name }
+  column(:url)        { |a| article_url(a) }
+  column(:created_at) { |a| a.created_at.to_s(:date) }
+  column(:author)     { |a| a.author.full_name }
 end
 ```
 
