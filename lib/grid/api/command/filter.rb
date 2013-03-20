@@ -29,13 +29,14 @@ module Grid
           expr << relation.table[name].lteq(filter[:to])   if filter.has_key?(:to)
           expr.inject(:and)
         else
-          relation.table[name].matches("%#{filter}%")
+          relation.table[name].eq(filter)
         end
       end
       conditions.compact.inject(:and)
     end
 
     def filter_based_on_hash(value)
+      # TODO: automatically detect if field is datetime and try to parse it with all known formats
       case value[:type].to_s
       when 'time'
         value[:from] = Time.at(value[:from].to_f) if value.has_key?(:from)
