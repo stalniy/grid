@@ -2,11 +2,12 @@ module Grid
   class Builder::Context
     attr_accessor :columns, :options, :scope, :name
 
-    def initialize(options = {})
+    def initialize(options = {}, &block)
       @name  = options.delete(:name)
       @scope = options.delete(:scope)
       @options = options
       @columns = create_columns
+      self.instance_eval(&block)
     end
 
     def column(name, options = {}, &block)
@@ -37,8 +38,7 @@ module Grid
 
     def scope_for(name, options = {}, &block)
       column_name = options.delete(:as) || name
-      nested_context = Builder::Context.new(:scope => scope, :name => name).tap{ |ctx| block.bind(ctx).call }
-      column column_name, options.merge(:as => nested_context)
+      column column_name, options.merge(:as => Builder::Context.new(:scope => scope, :name => name, &block))
     end
 
     def convert(records)
