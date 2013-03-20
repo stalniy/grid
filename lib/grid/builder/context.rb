@@ -1,6 +1,6 @@
 module Grid
   class Builder::Context
-    attr_accessor :columns, :options, :scope, :name
+    attr_reader :columns, :options, :scope, :name
 
     def initialize(options = {}, &block)
       @name  = options.delete(:name)
