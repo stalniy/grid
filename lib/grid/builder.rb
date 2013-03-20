@@ -47,8 +47,8 @@ module Grid
       end
     end
     
-    def to_s assemble;end
-    def to_str assemble;end
+    def to_s; assemble;end
+    def to_str; assemble;end
 
   private
 
