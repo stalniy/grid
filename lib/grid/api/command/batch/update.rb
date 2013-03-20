@@ -2,7 +2,7 @@ module Grid
   class Api::Command::Batch::Update < Api::Command::Batch
     def configure(relation, params)
       super.tap do |params|
-        raise BadContext, "There is nothing to update" if params[:items].blank?
+        raise ArgumentError, "There is nothing to update" if params[:items].blank?
       end
     end
 
