@@ -29,8 +29,8 @@ module Grid
         run_command!(cmd, params) unless command(cmd).is_a?(::Grid::Api::Command::Batch)
       end
       self
-    rescue ::Grid::Api::Command::UnknownCommandError, ::Grid::Api::Command::BadContext => e
-      raise MessageError.new(e.message).tap{ |m| m.status(e.status) }
+    rescue ArgumentError => e
+      raise MessageError.new(e.message).tap{ |m| m.status = 'error' }
     end
 
     def run_command!(name, params)
