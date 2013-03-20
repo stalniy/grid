@@ -36,5 +36,8 @@ module Grid
       params
     end
 
+    def prepare_context(api, params)
+    end
+
   end
 end

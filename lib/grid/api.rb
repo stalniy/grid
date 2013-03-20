@@ -1,6 +1,6 @@
 module Grid
   class Api
-    attr_accessor :relation, :options
+    attr_reader :relation, :options
 
     def initialize(relation)
       @relation = relation
@@ -9,7 +9,6 @@ module Grid
 
     def delegate(commands)
       options[:delegated_commands].merge! commands.stringify_keys
-      self
     end
 
     def command_delegated?(cmd)
@@ -26,9 +25,9 @@ module Grid
 
     def build_with!(params)
       params.fetch(:cmd).each do |cmd|
-        run_command!(cmd, params) unless command(cmd).is_a?(::Grid::Api::Command::Batch)
+        next if  command(cmd).is_a?(::Grid::Api::Command::Batch)
+        run_command!(cmd, params) and prepare_options_with(cmd, params)
       end
-      self
     rescue ArgumentError => e
       raise MessageError.new(e.message).tap{ |m| m.status = 'error' }
     end
@@ -41,6 +40,10 @@ module Grid
       else
         @relation = command(name).execute_on(@relation, params)
       end
+    end
+
+    def prepare_options_with(cmd, params)
+      command(cmd).prepare_context(self, params)
     end
 
     class MessageError < StandardError

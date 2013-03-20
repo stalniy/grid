@@ -25,7 +25,7 @@ module Grid
 
       @_scope = options.delete(:scope)
       @_view_type = options.delete(:view_type)
-      
+
       copy_instance_variables_from(@_scope) if @_scope
       self.instance_eval(&block)
     end
@@ -34,7 +34,7 @@ module Grid
       context = Context.new(options.merge(:scope => @_scope), &block)
       @_view_handler = @_view_type.new(relation, context)
     end
-    
+
     def assemble(&block)
       @_view_handler.assemble_with(@_scope.params, &block)
     end
@@ -46,7 +46,7 @@ module Grid
         super
       end
     end
-    
+
     def to_s; assemble;end
     def to_str; assemble;end
 

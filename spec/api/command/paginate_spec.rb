@@ -1,19 +1,19 @@
 require 'spec_helper'
 
 describe Grid::Api::Command::Paginate do
-  let(:relation){ double("ActiveRecord::Relation") }
+  let(:relation){ double("ActiveRecord::Relation").as_null_object }
 
   context "when executes" do
     it "should use default options" do
-      relation.should_receive(:limit).with(subject.class.default_per_page).and_return(relation)
-      relation.should_receive(:offset).with(0).and_return(relation)
+      relation.should_receive(:limit).with(subject.class.default_per_page)
+      relation.should_receive(:offset).with(0)
 
       subject.execute_on(relation, {})
     end
 
     it "should respect specified options" do
-      relation.should_receive(:limit).with(5).and_return(relation)
-      relation.should_receive(:offset).with(10).and_return(relation)
+      relation.should_receive(:limit).with(5)
+      relation.should_receive(:offset).with(10)
 
       subject.execute_on(relation, :page => 3, :per_page => 5)
     end

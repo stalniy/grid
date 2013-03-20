@@ -3,10 +3,10 @@ module Grid
     def configure(relation, params)
       {}.tap do |o|
         o[:field] = params[:field]
-        o[:field] = "#{relation.table_name}.#{o[:field]}" unless relation.columns_hash[o[:field]].nil?
+        o[:field] = "#{relation.table_name}.#{o[:field]}" if relation.table[o[:field]].present?
 
         o[:order] = params[:order]
-        o[:order] = 'asc' unless %w(asc desc).include?(o[:order])
+        o[:order] = 'asc' unless %w{ asc desc }.include?(o[:order])
       end
     end
 

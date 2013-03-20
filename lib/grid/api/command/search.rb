@@ -77,7 +77,7 @@ module Grid
         primary_key = relation.table.primary_key
         foreign_key = assoc.klass.arel_table[assoc.foreign_key]
       else
-        raise CommandWrongContext, "Unable to search over #{assoc.macro}"
+        raise ArgumentError, "Unable to search over #{assoc.macro}"
       end
       [ primary_key, foreign_key ]
     end
