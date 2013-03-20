@@ -27,7 +27,7 @@ module Grid
       {}.tap do |json|
         json[:meta], json[:columns] = context.options.except(:delegate, :search_over), context.visible_columns if options[:with_meta]
         json[:max_page] = api.options[:max_page] unless options[:per_page] === false
-        json[:items] = context.convert(api.relation)
+        json[:items] = context.assemble(api.relation)
       end
     end
 

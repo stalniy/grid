@@ -41,7 +41,7 @@ module Grid
       column column_name, options.merge(:as => Builder::Context.new(:scope => scope, :name => name, &block))
     end
 
-    def convert(records)
+    def assemble(records)
       records.map{ |record| build_row_for(record) }
     end
 
@@ -83,13 +83,13 @@ module Grid
       elsif formatter.is_a? Symbol
         record.send(formatter)
       elsif formatter.is_a? Builder::Context
-        formatter.convert(record.send(formatter.name)) if can_convert?(record, options)
+        formatter.convert(record.send(formatter.name)) if may_assemble?(record, options)
       else
         record.send(name)
       end
     end
 
-    def can_convert?(record, options)
+    def may_assemble?(record, options)
       condition = options[:if] || options[:unless]
 
       if condition.is_a? Symbol
