@@ -13,7 +13,7 @@ After gem is installed you need to run `rails generate grid:install`. This will 
 
 ## Usage
 
-Controller: 
+Controller:
 ```ruby
 # app/controllers/articles_controller.rb
 class ArticlesController < ApplicationController
@@ -79,7 +79,7 @@ This command requires only one hash parameter **filters** but it can be in 3 dif
 
 - `{ :title => "test" }` => `name LIKE "%test%"`
 - `{ :created_at => { :from => ... , :to => ..., :type => "time|date|nil" } }` => `created_at >= :from AND created_at <= :to`
-    
+
     - *type* specifies type of from/to parameters (optional, can be *date* or *time*). If `:type` is *date* from/to fields will be parsed as dates with format `Date::DATE_FORMATS[:date]`. If `:type` is *time* from/to fields should be timestamps.
     - *from/to* specifies top and bottom limits (one of them can be omitted)
 
@@ -112,7 +112,7 @@ class ArticlesController < ApplicationController
   def batch_update
     articles = Grid.build_for(Article).run_command!('batch/update', :items => params[:articles])
     render :json => build_grid_response_for(articles, :success => "Articles has been successfully updated")
-  rescue Grid::Api::MessageError => e
+  rescue ArgumentError => e
     render :json => { :message => e.message, :status => :error }
   end
 
@@ -136,7 +136,7 @@ Command class should implement at least  2 methods: `configure` and `run_on`.
 ```ruby
 module GridCommands
   class Batch
-  
+
     class Suspend < Grid::Api::Command::Batch
       def configure(relation, params)
         super.tap do |o|
@@ -148,7 +148,7 @@ module GridCommands
         relation.where(relation.table.primary_key.in(params[:item_ids])).update_all(:status => 'suspended')
       end
     end
-    
+
   end
 end
 ```
@@ -178,7 +178,7 @@ module GridCommands
         end
       end
     end
-    
+
   end
 end
 ```
@@ -301,7 +301,7 @@ grid_for @groups, :per_page => 2 do
   column :is_active do |p|
     params[:current_id].to_i == p.id
   end
-  
+
   scope_for :articles do
     column :title
     column :created_at do |a|
@@ -359,7 +359,7 @@ grid_for @groups, :per_page => 2 do
   column :is_active do |p|
     params[:current_id].to_i == p.id
   end
-  
+
   scope_for :articles, :as => :children, :if => :is_active do
     column :title
   end
@@ -372,7 +372,7 @@ grid_for @groups, :per_page => 2 do
   column :is_active do |p|
     params[:current_id].to_i == p.id
   end
-  
+
   scope_for :articles, :as => :children, :if => lambda{ |group| group.id == params[:current_id].to_i } do
     column :title
   end
@@ -422,7 +422,7 @@ grid_for @groups, :per_page => 2 do
   column :is_active do |p|
     params[:current_id].to_i == p.id
   end
-  
+
   scope_for :articles, :as => :children, :if => :is_active do
     column :title
   end

@@ -25,11 +25,9 @@ module Grid
 
     def build_with!(params)
       params.fetch(:cmd).each do |cmd|
-        next if  command(cmd).is_a?(::Grid::Api::Command::Batch)
+        next if command(cmd).is_a?(::Grid::Api::Command::Batch)
         run_command!(cmd, params) and prepare_options_with(cmd, params)
       end
-    rescue ArgumentError => e
-      raise MessageError.new(e.message).tap{ |m| m.status = 'error' }
     end
 
     def run_command!(name, params)
@@ -44,10 +42,6 @@ module Grid
 
     def prepare_options_with(cmd, params)
       command(cmd).prepare_context(self, params)
-    end
-
-    class MessageError < StandardError
-      attr_accessor :status
     end
 
   end

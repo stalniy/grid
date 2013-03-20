@@ -13,8 +13,8 @@ module Grid
       options = configure(params.merge context.options)
       api.build_with!(options)
       stringify as_json_with(options)
-    rescue ::Grid::Api::MessageError => error
-      stringify as_json_message(error)
+    rescue ArgumentError => error
+      stringify as_json_message('error', error.message)
     end
 
   private
@@ -31,8 +31,8 @@ module Grid
       end
     end
 
-    def as_json_message(notice)
-      {:status => notice.status, :message => notice.message}
+    def as_json_message(status, message)
+      {:status => status, :message => notice.message}
     end
 
     def configure(params)
