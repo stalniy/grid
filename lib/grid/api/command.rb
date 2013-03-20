@@ -3,7 +3,7 @@ module Grid
 
     def self.find(cmd)
       @@commands ||= {}
-      @@commands[cmd] ||= build!(cmd)
+      @@commands[cmd] ||= build(cmd)
     end
 
     def self.register_lookup_scope(scope)
@@ -14,11 +14,11 @@ module Grid
       @@scopes ||= ["grid/api/command"]
     end
 
-    def self.build!(cmd)
+    def self.build(cmd)
       scope = scopes.detect do |scope|
         "#{scope}/#{cmd}".camelize.constantize rescue nil
       end
-      raise UnknownCommandError, %{ Command "#{cmd}" is unknown" } if scope.nil?
+      raise ArgumentError, %{ Command "#{cmd}" is unknown" } if scope.nil?
       "#{scope}/#{cmd}".camelize.constantize.new
     end
 
@@ -34,18 +34,6 @@ module Grid
 
     def configure(relation, params)
       params
-    end
-
-    class UnknownCommandError < StandardError
-      def status
-        'error'
-      end
-    end
-
-    class BadContext < StandardError
-      def status
-        'error'
-      end
     end
 
   end
