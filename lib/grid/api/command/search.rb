@@ -29,10 +29,9 @@ module Grid
 
     def build_conditions_for(relation, params)
       query = "%#{params[:query]}%"
-      conditions = (params[:searchable_columns] || searchable_columns_of(relation)).map do |column|
+      (params[:searchable_columns] || searchable_columns_of(relation)).map do |column|
         relation.table[column].matches(query)
-      end
-      conditions.inject(:or)
+      end.inject(:or)
     end
 
     def build_conditions_for_associations_of(relation, params)
@@ -57,8 +56,8 @@ module Grid
 
     def row_ids_matched_for(relation, conditions)
       conditions.flat_map do |assoc, condition|
-        query = join_relations_with(condition, relation, assoc).arel
-        relation.connection.select_all(query).flat_map(&:values)
+        query = join_relations_with(condition, relation, assoc).to_sql
+        relation.connection.select_all(query).map(&:values)
       end.uniq
     end
 
