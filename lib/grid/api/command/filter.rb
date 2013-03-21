@@ -1,14 +1,7 @@
 module Grid
   class Api::Command::Filter < Api::Command
     def configure(relation, params)
-      params.fetch(:filters, {}).inject({}) do |filters, pair|
-        if pair.last.is_a?(Hash)
-          filters[pair.first] = filter_based_on_hash(pair.last)
-        else
-          filters[pair.first] = pair.last
-        end
-        filters
-      end
+      params.fetch(:filters, {}).dup
     end
 
     def run_on(relation, filters)
@@ -25,8 +18,8 @@ module Grid
           relation.table[name].in(filter)
         elsif filter.kind_of?(Hash)
           expr = []
-          expr << relation.table[name].gteq(filter[:from]) if filter.has_key?(:from)
-          expr << relation.table[name].lteq(filter[:to])   if filter.has_key?(:to)
+          expr << relation.table[name].gteq(prepare_value filter, :from) if filter.has_key?(:from)
+          expr << relation.table[name].lteq(prepare_value filter, :to)   if filter.has_key?(:to)
           expr.inject(:and)
         else
           relation.table[name].eq(filter)
@@ -35,17 +28,15 @@ module Grid
       conditions.compact.inject(:and)
     end
 
-    def filter_based_on_hash(value)
-      # TODO: automatically detect if field is datetime and try to parse it with all known formats
-      case value[:type].to_s
+    def prepare_value(filter, name)
+      case filter[:type].to_s
       when 'time'
-        value[:from] = Time.at(value[:from].to_f) if value.has_key?(:from)
-        value[:to]   = Time.at(value[:to].to_f)   if value.has_key?(:to)
+        Time.at(filter[name].to_f)
       when 'date'
-        value[:from] = Date.strptime(value[:from], Date::DATE_FORMATS[:date]) if value.has_key?(:from)
-        value[:to]   = Date.strptime(value[:to],   Date::DATE_FORMATS[:date]) if value.has_key?(:to)
+        filter[name].to_time
+      else
+        filter[name]
       end
-      value
     end
 
   end
