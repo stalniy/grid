@@ -31,7 +31,7 @@ module Grid
     def prepare_value(filter, name)
       case filter[:type].to_s
       when 'time'
-        Time.at(filter[name].to_f)
+        Time.at(Float filter[name])
       when 'date'
         filter[name].to_time
       else
