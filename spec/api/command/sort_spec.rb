@@ -16,7 +16,7 @@ describe Grid::Api::Command::Sort do
     relation.should_receive(:order).with("#{table.name}.#{options[:field]} #{options[:order]}")
   end
 
-  it "does not prepend field if column is an alias" do
+  it "does not prepend field with table name if field is an alias" do
     table.stub(:present? => false)
     relation.should_receive(:order).with("#{options[:field]} #{options[:order]}")
   end
