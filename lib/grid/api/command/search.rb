@@ -39,7 +39,7 @@ module Grid
       params[:search_over].inject({}) do |conditions, options|
         assoc_name, assoc_fields = options
         assoc = relation.reflections[assoc_name.to_sym]
-        assoc_condition = build_conditions_for(assoc.klass.scoped, params.merge :searchable_columns => assoc_fields)
+        assoc_condition = build_conditions_for(assoc.klass.scoped, params.merge(:searchable_columns => assoc_fields))
         conditions[assoc] = assoc_condition unless assoc_condition.blank?
         conditions
       end
