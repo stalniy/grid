@@ -15,9 +15,11 @@ module Grid
     end
 
     def visible_columns
-      columns.inject({}) do |visible_columns, col|
-        visible_columns[col.first] = col.last.except(:as, :if, :unless) unless col.last[:hidden]
-        visible_columns
+      columns.inject({}) do |vc, column|
+        name, options = column
+        vc[name] = options.except(:as, :if, :unless) unless col.last[:hidden]
+        vc[name] = options[:as].visible_columns if options[:as].respond_to?(:visible_columns)
+        vc
       end
     end
 
@@ -70,8 +72,8 @@ module Grid
 
     def build_row_for(record)
       columns.inject({}) do |row, column|
-        row[column.first] = build_column_for(record, column.first, column.last)
-        row
+        name, options = column
+        row.merge name => build_column_for(record, name, options)
       end
     end
 
@@ -82,8 +84,8 @@ module Grid
         formatter.call(record)
       elsif formatter.is_a? Symbol
         record.send(formatter)
-      elsif formatter.is_a? Builder::Context
-        formatter.convert(record.send(formatter.name)) if may_assemble?(record, options)
+      elsif formatter.respond_to?(:assemble)
+        formatter.assemble(record.send(formatter.name)) if may_assemble?(record, options)
       else
         record.send(name)
       end

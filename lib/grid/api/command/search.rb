@@ -3,8 +3,9 @@ module Grid
     def configure(relation, params)
       {}.tap do |o|
         o[:query] = params.fetch(:query, '').strip
-        o[:search_over] = Array.wrap(params[:search_over])
         o[:searchable_columns] = params[:searchable_columns]
+        o[:search_over] = params[:search_over]
+        o[:search_over] = Hash[o[:search_over].zip] if o[:search_over].respond_to?(:zip)
       end
     end
 
@@ -35,9 +36,10 @@ module Grid
     end
 
     def build_conditions_for_associations_of(relation, params)
-      params[:search_over].inject({}) do |conditions, assoc_name|
+      params[:search_over].inject({}) do |conditions, options|
+        assoc_name, assoc_fields = options
         assoc = relation.reflections[assoc_name.to_sym]
-        assoc_condition = build_conditions_for(assoc.klass.scoped, params)
+        assoc_condition = build_conditions_for(assoc.klass.scoped, params.merge :searchable_columns => assoc_fields)
         conditions[assoc] = assoc_condition unless assoc_condition.blank?
         conditions
       end
