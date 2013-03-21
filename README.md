@@ -80,7 +80,7 @@ This command requires only one hash parameter **filters** but it can be in 3 dif
 - `{ :title => "test" }` => `name LIKE "%test%"`
 - `{ :created_at => { :from => ... , :to => ..., :type => "time|date|nil" } }` => `created_at >= :from AND created_at <= :to`
 
-    - *type* specifies type of from/to parameters (optional, can be *date* or *time*). If `:type` is *date* from/to fields will be parsed as dates with format `Date::DATE_FORMATS[:date]`. If `:type` is *time* from/to fields should be timestamps.
+    - *type* specifies type of from/to parameters (optional, can be *date* or *time*). If `:type` is *date* from/to fields will be parsed into dates using `to_time` method. If `:type` is *time* from/to fields should be timestamps.
     - *from/to* specifies top and bottom limits (one of them can be omitted)
 
 - `{ :id => [1, 2, 3] }` => `id IN (1,2,3)`
@@ -102,8 +102,8 @@ Value of array is ignored if it's non-integer.
 ### Run batch commands
 
 It's impossible to run batch commands using `Grid::Builder`. So, client has to manually build grid instance and call `run_command!` method:
-```ruby
-    Grid.build_for(Article).run_command!('batch/update', params)
+```ruby 
+Grid.build_for(Article).run_command!('batch/update', params)
 ```
 Actually it's possible to run any command as shown in line above.
 Example of controller's batch action:
@@ -135,20 +135,16 @@ Command class should implement at least  2 methods: `configure` and `run_on`.
 `configure` method should return validated parameters or raise an error if one of the required options is missed. Example:
 ```ruby
 module GridCommands
-  class Batch
-
-    class Suspend < Grid::Api::Command::Batch
-      def configure(relation, params)
-        super.tap do |o|
-          raise Grid::Api::Command::BadContext, "There is nothing to update" if o[:item_ids].blank?
-        end
-      end
-
-      def run_on(relation, params)
-        relation.where(relation.table.primary_key.in(params[:item_ids])).update_all(:status => 'suspended')
-      end
+  class BatchSuspend < Grid::Api::Command::Batch
+    def configure(relation, params)
+      options = super
+      raise ArgumentError, "There is nothing to update" if options[:item_ids].blank?
+      options
     end
 
+    def run_on(relation, params)
+      relation.where(relation.table.primary_key.in(params[:item_ids])).update_all(:status => 'suspended')
+    end
   end
 end
 ```
@@ -163,22 +159,17 @@ end
 ```
 Then it will be possible to run:
 ```ruby
-Grid.build_for(Article).run_command!('batch/suspend', :item_ids => params[:id])
+Grid.build_for(Article).run_command!('batch_suspend', :item_ids => params[:id])
 ```
 Using lookup technique it's possible to override existing commands. Suppose there is a need to customize `batch/update` command to allow non-integer ids:
 ```ruby
 module GridCommands
-  class Batch
-
-    class Update < Grid::Api::Command::Batch::Update
-      def configure(relation, params)
-        {}.tap do |o|
-          o[:item_ids] = params[:item_ids].reject(&:blank?)
-          raise Grid::Api::Command::BadContext, "There is nothing to update" if o[:item_ids].blank?
-        end
-      end
+  class Batch::Update < Grid::Api::Command::Batch::Update
+    def configure(relation, params)
+      options = super.tap{ |o| o[:item_ids].reject(&:blank?) }
+      raise ArgumentError, "There is nothing to update" if options[:item_ids].blank?
+      options
     end
-
   end
 end
 ```
