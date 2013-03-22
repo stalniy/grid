@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Grid::Api::Command::Batch::Update do
-  let(:table)    { double(:primary_key => double.as_null_object) }
+  let(:table)    { double(:primary_key => double(:name => 'id').as_null_object) }
   let(:relation) { double(:table => table).tap{ |r| r.stub(:scoped => r, :where => r) } }
 
   it "raise exception when items is blank" do
