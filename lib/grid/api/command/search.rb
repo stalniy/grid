@@ -5,7 +5,7 @@ module Grid
         o[:query] = params.fetch(:query, '').strip
         o[:searchable_columns] = params[:searchable_columns]
         o[:search_over] = params[:search_over]
-        o[:search_over] = Hash[o[:search_over].zip] if o[:search_over].respond_to?(:zip)
+        o[:search_over] = Hash[o[:search_over].zip] if o[:search_over].kind_of?(Array)
       end
     end
 
