@@ -1,28 +1,28 @@
 require 'spec_helper'
 
 shared_examples "for a range filter" do
-  let(:filters){ { :field => value } }
+  let(:filters){ { :field => filter } }
 
   context "when both boundaries are specified" do
     it "adds 'from' filter" do
-      relation.table[:field].should_receive(:gteq).with(filter[:from])
+      relation.table[:field].should_receive(:gteq).with(value[:from])
     end
 
     it "adds 'to' filter" do
-      relation.table[:field].should_receive(:lteq).with(filter[:to])
+      relation.table[:field].should_receive(:lteq).with(value[:to])
     end
   end
 
   it "adds only 'to' filter when left boundary is missed" do
     value.delete(:from)
     relation.table[:field].should_not_receive(:gteq)
-    relation.table[:field].should_receive(:lteq).with(filter[:to])
+    relation.table[:field].should_receive(:lteq).with(value[:to])
   end
 
   it "adds only 'from' filter when right boundary is missed" do
     value.delete(:to)
     relation.table[:field].should_not_receive(:lteq)
-    relation.table[:field].should_receive(:gteq).with(filter[:from])
+    relation.table[:field].should_receive(:gteq).with(value[:from])
   end
 end
 
@@ -57,20 +57,20 @@ describe Grid::Api::Command::Filter do
   end
 
   context "when filters with date range" do
-    let(:value)  { {:from => '2013-02-12 12:20:21', :to => '2013-05-12 13:20:01', :type => :date } }
-    let(:filter) { Hash[value.except(:type).map{ |k, v| [k, v.to_time] }] }
+    let(:filter) { {:from => '2013-02-12 12:20:21', :to => '2013-05-12 13:20:01', :type => :date } }
+    let(:value)  { Hash[filter.except(:type).map{ |k, v| [k, v.to_time] }] }
     include_examples "for a range filter"
   end
 
   context "when filters with time range" do
-    let(:value)  { {:from => 2.days.ago.to_f, :to => Time.now.to_f, :type => :time } }
-    let(:filter) { Hash[value.except(:type).map{ |k, v| [k, Time.at(v)] }] }
+    let(:filter) { {:from => 2.days.ago.to_f, :to => Time.now.to_f, :type => :time } }
+    let(:value)  { Hash[filter.except(:type).map{ |k, v| [k, Time.at(v)] }] }
     include_examples "for a range filter"
   end
 
   context "when filters with non-date range" do
-    let(:value){ {:from => 10, :to => 20} }
-    let(:filter) { value }
+    let(:filter) { {:from => 10, :to => 20} }
+    let(:value)  { filter }
     include_examples "for a range filter"
   end
 
