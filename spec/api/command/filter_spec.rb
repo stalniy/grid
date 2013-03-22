@@ -13,16 +13,28 @@ shared_examples "for a range filter" do
     end
   end
 
-  it "adds only 'to' filter when left boundary is missed" do
-    value.delete(:from)
-    relation.table[:field].should_not_receive(:gteq)
-    relation.table[:field].should_receive(:lteq).with(value[:to])
+  context "when left boundary is missed" do
+    before(:each){ filter.delete(:from) }
+
+    it "adds 'to' filter" do
+      relation.table[:field].should_receive(:lteq).with(value[:to])
+    end
+
+    it "does not add 'from' filter" do
+      relation.table[:field].should_not_receive(:gteq)
+    end
   end
 
-  it "adds only 'from' filter when right boundary is missed" do
-    value.delete(:to)
-    relation.table[:field].should_not_receive(:lteq)
-    relation.table[:field].should_receive(:gteq).with(value[:from])
+  context "when right boundary is missed" do
+    before(:each){ filter.delete(:to) }
+
+    it "adds 'from' filter " do
+      relation.table[:field].should_receive(:gteq).with(value[:from])
+    end
+
+    it "does not add 'to' filter" do
+      relation.table[:field].should_not_receive(:lteq)
+    end
   end
 end
 
