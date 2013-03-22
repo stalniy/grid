@@ -19,10 +19,6 @@ module Grid
       ::Grid::Api::Command.find(type)
     end
 
-    def max_page(params = {})
-      command(:paginate).calculate_max_page_for(relation, params)
-    end
-
     def build_with!(params)
       params.fetch(:cmd).each do |cmd|
         next if command(cmd).is_a?(::Grid::Api::Command::Batch)
