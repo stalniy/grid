@@ -14,7 +14,7 @@ shared_examples "for a range filter" do
   end
 
   context "when left boundary is missed" do
-    before(:each){ filter.delete(:from) }
+    before(:each){ filters[:field] = filter.except(:from) }
 
     it "adds 'to' filter" do
       relation.table[:field].should_receive(:lteq).with(value[:to])
@@ -26,7 +26,7 @@ shared_examples "for a range filter" do
   end
 
   context "when right boundary is missed" do
-    before(:each){ filter.delete(:to) }
+    before(:each){ filters[:field] = filter.except(:to) }
 
     it "adds 'from' filter " do
       relation.table[:field].should_receive(:gteq).with(value[:from])
