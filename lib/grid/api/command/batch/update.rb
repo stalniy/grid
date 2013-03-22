@@ -8,7 +8,8 @@ module Grid
 
     def run_on(relation, params)
       record_ids = params[:items].map{ |row| row['id'] }
-      records = relation.where(:id => record_ids).index_by(&:id)
+      primary_key = relation.scoped.table.primary_key
+      records = relation.where(primary_key.in(record_ids)).index_by(&primary_key.name.to_sym)
 
       params[:items].map do |row|
         record = records[row['id'].to_i]
