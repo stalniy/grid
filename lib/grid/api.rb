@@ -12,7 +12,7 @@ module Grid
     end
 
     def build_with!(params)
-      params.fetch(:cmd).each do |cmd|
+      params[:cmd].each do |cmd|
         @relation = run_command!(cmd, params) unless command(cmd).batch?
       end
     end
@@ -21,7 +21,7 @@ module Grid
       command(name).prepare_context(self, params)
 
       if command_delegated?(name)
-        assoc_name = options[:delegated_commands][name]
+        assoc_name = options[:delegated_commands][name.to_s]
         assoc = @relation.reflections[assoc_name].klass.scoped
         @relation.merge command(name).execute_on(assoc, params)
       else
@@ -36,7 +36,7 @@ module Grid
     end
 
     def command_delegated?(cmd)
-      options[:delegated_commands].has_key?(cmd)
+      options[:delegated_commands].has_key?(cmd.to_s)
     end
 
   end
