@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Grid::Api::Command::Batch::Update do
+describe Grid::Api::Command::BatchUpdate do
   let(:table)    { double(:primary_key => double(:name => 'id').as_null_object) }
   let(:relation) { double(:table => table).tap{ |r| r.stub(:scoped => r, :where => r) } }
 
@@ -8,6 +8,10 @@ describe Grid::Api::Command::Batch::Update do
     expect{
       subject.execute_on(relation, :items => [])
     }.to raise_error ArgumentError
+  end
+
+  it "is a batch command" do
+    subject.batch?.should be_true
   end
 
   context "when items is present" do

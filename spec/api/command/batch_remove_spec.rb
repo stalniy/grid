@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Grid::Api::Command::Batch::Remove do
+describe Grid::Api::Command::BatchRemove do
   let(:table)    { double(:primary_key => double.as_null_object) }
   let(:relation) { double(:table => table).tap{ |r| r.stub(:scoped => r, :where => r) } }
 
@@ -8,6 +8,10 @@ describe Grid::Api::Command::Batch::Remove do
     expect{
       subject.execute_on(relation, :item_ids => [])
     }.to raise_error ArgumentError
+  end
+
+  it "is a batch command" do
+    subject.batch?.should be_true
   end
 
   context "when item_ids is present" do
