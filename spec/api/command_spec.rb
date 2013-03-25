@@ -30,6 +30,7 @@ describe Grid::Api::Command do
 
   context "when register new scope" do
     before(:each) { subject.register_lookup_scope commands_scope.to_s.underscore }
+    after(:each) { subject.scopes.shift() }
 
     it "put scope at the top" do
       subject.scopes.first.should eql commands_scope.to_s.underscore
