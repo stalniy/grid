@@ -23,9 +23,14 @@ describe Grid::Api::Command do
   it "raise error if command not found" do
     expect{ subject.find(:unknown_cmd) }.to raise_error ArgumentError
   end
+  
+  it "has only one scope for commands by default" do
+    subject.scopes.should eql [ subject.to_s.underscore ]
+  end
 
   context "when register new scope" do
     before(:each) { subject.register_lookup_scope commands_scope.to_s.underscore }
+    after(:each) { subject.scopes.shift() }
 
     it "put scope at the top" do
       subject.scopes.first.should eql commands_scope.to_s.underscore
