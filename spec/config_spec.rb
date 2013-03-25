@@ -2,40 +2,34 @@ require 'spec_helper'
 
 describe Grid::Config do
   context "when initializes" do
-
-    it "initializes command_lookup_scopes with empty array by default" do
-      subject.commands_lookup_scopes.should eql []
-    end
-
-    it "doesn't uses prettify_json option by default" do
-      subject.prettify_json.should be_false
-    end
+    its(:commands_lookup_scopes) { should eql [] }
+    its(:prettify_json) { should be_false }
   end
 
   context "when applying specified values" do
-    before(:each) do
-      # because class variables stores between tests
-      Grid::Api::Command.class_variable_set :@@scopes, nil
-      subject.commands_lookup_scopes += %w{ command_scope_1 command_scope_2 }
-      subject.default_max_per_page = 10
-      subject.prettify_json = true
-      subject.apply
-    end
+    let(:command) { Grid::Api::Command }
+    let(:builder) { Grid::Builder::Json }
+    before(:each) { configure(subject) }
 
     it "registers specified lookup scopes from configuration" do
-      Grid::Api::Command.scopes.should == [
-        "command_scope_2",
-        "command_scope_1",
-        "grid/api/command",
-      ]
+      command.scopes.should include *subject.commands_lookup_scopes
     end
 
     it "sets up default_per_page for Paginate command" do
-      Grid::Api::Command.find(:paginate).default_per_page.should eql 10
+      command.find(:paginate).default_per_page.should eql subject.default_max_per_page
     end
 
     it "sets up prettify_json option for json builder" do
-      Grid::Builder::Json.prettify_json.should be_true
+      builder.prettify_json.should eql subject.prettify_json
     end
+  end
+
+private 
+
+  def configure(config)
+    config.commands_lookup_scopes += %w{ command_scope_1 command_scope_2 }
+    config.default_max_per_page = 10
+    config.prettify_json = true
+    config.apply
   end
 end
