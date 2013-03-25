@@ -12,7 +12,7 @@ describe Grid::Config do
     before(:each) { configure(subject) }
 
     it "registers specified lookup scopes from configuration" do
-      command.scopes.should include *subject.commands_lookup_scopes
+      command.scopes.should include(*subject.commands_lookup_scopes)
     end
 
     it "sets up default_per_page for Paginate command" do
