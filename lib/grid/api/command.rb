@@ -26,7 +26,14 @@ module Grid
       run_on(relation, configure(relation, params))
     end
 
-  private
+    def batch?
+      false
+    end
+
+    def prepare_context(api, params)
+    end
+
+  protected
 
     def run_on(relation, params)
       raise "Method \"#{inspect}::run_on\" should be implemented by child class"
@@ -34,9 +41,6 @@ module Grid
 
     def configure(relation, params)
       params
-    end
-
-    def prepare_context(api, params)
     end
 
   end

@@ -1,7 +1,6 @@
 require 'grid/version'
 require 'grid/api'
 require 'grid/api/command'
-require 'grid/api/command/batch'
 require 'grid/builder'
 require 'grid/config'
 Dir.chdir(File.dirname(__FILE__)) do

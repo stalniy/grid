@@ -1,8 +1,9 @@
 module Grid
-  class Api::Command::Batch::Update < Api::Command::Batch
+  class Api::Command::BatchUpdate < Api::Command
     def configure(relation, params)
-      super.tap do |params|
-        raise ArgumentError, "There is nothing to update" if params[:items].blank?
+      {}.tap do |o|
+        o[:items] = params.fetch(:items, []).reject{ |item| item['id'].to_i <= 0 }
+        raise ArgumentError, "There is nothing to update" if o[:items].blank?
       end
     end
 
@@ -17,5 +18,8 @@ module Grid
       end.compact
     end
 
+    def batch?
+      true
+    end
   end
 end
