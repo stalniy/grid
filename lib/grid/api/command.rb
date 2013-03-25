@@ -7,7 +7,7 @@ module Grid
     end
 
     def self.register_lookup_scope(scope)
-      scopes.unshift(scope)
+      scopes.unshift(scope).uniq!
     end
 
     def self.scopes
