@@ -17,12 +17,8 @@ describe Grid::Api do
       commands[cmd_name].should_receive(:execute_on).with(subject.relation, options)
     end
 
-    it "should be prepared by command" do
-      commands[cmd_name].should_receive(:prepare_context).with(subject, options)
-    end
-
     it "should be prepared by command instance" do
-      commands[cmd_name].should_receive(:prepare_context).with(subject, options)
+      commands[cmd_name].should_receive(:contextualize).with(subject.relation, options).and_return({})
     end
 
     it "run delegated command on specified target" do

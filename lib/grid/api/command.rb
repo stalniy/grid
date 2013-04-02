@@ -30,7 +30,8 @@ module Grid
       @is_batch ||= self.class.name.demodulize.starts_with?('Batch')
     end
 
-    def prepare_context(api, params)
+    def contextualize(relation, params)
+      {}
     end
 
   protected

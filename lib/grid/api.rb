@@ -18,7 +18,7 @@ module Grid
     end
 
     def run_command!(name, params)
-      command(name).prepare_context(self, params)
+      @options.merge! command(name).contextualize(@relation, params)
 
       if command_delegated?(name)
         assoc_name = options[:delegated_commands][name.to_s]
@@ -47,5 +47,6 @@ module Grid
         o[:cmd].uniq!
       end
     end
+
   end
 end

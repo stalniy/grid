@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Grid::Api::Command::Paginate do
-  let(:relation){ double("ActiveRecord::Relation").as_null_object }
+  let(:relation){ double("ActiveRecord::Relation", :count => 25).as_null_object }
 
   context "when options are missed" do
     after(:each){ subject.execute_on(relation, {}) }
@@ -27,18 +27,7 @@ describe Grid::Api::Command::Paginate do
     end
   end
 
-  context "when prepares context" do
-    let(:api) { double("Grid::Api", :relation => double(:count => 25).as_null_object, :options => {}) }
-    before(:each) { subject.prepare_context(api, :page => 1, :per_page => 15) }
-
-    it "calculates max_page" do
-      api.options[:max_page].should eql 2
-    end
-  end
-
   context "when calculates max page" do
-    before(:each){ relation.stub(:count => 25) }
-
     it "should use default per_page option" do
       subject.calculate_max_page_for(relation, {}).should eql (25.0 / subject.class.default_per_page).ceil
     end
@@ -46,6 +35,10 @@ describe Grid::Api::Command::Paginate do
     it "should respect specified per_page option" do
       subject.calculate_max_page_for(relation, :per_page => 15).should eql 2
     end
+  end
+
+  it "calculates max page when prepares context" do
+    subject.contextualize(relation, :page => 1, :per_page => 15).fetch(:max_page).should eql 2
   end
 
 end

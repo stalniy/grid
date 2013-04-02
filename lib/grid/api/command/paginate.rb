@@ -21,8 +21,9 @@ module Grid
       (relation.except(:limit, :offset).count / params[:per_page].to_f).ceil
     end
 
-    def prepare_context(api, params)
-      api.options[:max_page] = calculate_max_page_for(api.relation, params)
+    def contextualize(relation, params)
+      {:max_page => calculate_max_page_for(relation, params)}
     end
+
   end
 end
