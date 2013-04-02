@@ -32,8 +32,9 @@ describe Grid::Api do
   end
 
   context "when run few commands" do
-    let(:params) {{ :cmd => [:sort, :search, :batch_update], :field => "title", :query => "test" }}
-    after(:each) { subject.build_with!(params) }
+    let(:params)  {{ :cmd => [:sort, :search, :batch_update], :field => "title", :query => "test" }}
+    before(:each) { subject.stub(:run_command!) }
+    after(:each)  { subject.build_with!(params) }
 
     it "skip batch commands" do
       commands[:batch_update].should_not_receive(:execute_on)
@@ -43,6 +44,19 @@ describe Grid::Api do
       subject.should_receive(:run_command!).with(:sort, params)
       subject.should_receive(:run_command!).with(:search, params)
     end
-  end
 
+    it "adds paginate command by default" do
+      subject.should_receive(:run_command!).with(:paginate, params)
+    end
+
+    it "doesn't add paginate command if per_page equals false" do
+      params[:per_page] = false
+      subject.should_not_receive(:run_command!).with(:paginate, params)
+    end
+
+    it "delegates specified commands" do
+      params[:delegate] = {:sort => child_relation}
+      subject.should_receive(:delegate).with(params[:delegate])
+    end
+  end
 end
