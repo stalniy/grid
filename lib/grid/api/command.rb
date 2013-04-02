@@ -18,7 +18,7 @@ module Grid
       scope = scopes.detect do |scope|
         "#{scope}/#{cmd}".camelize.constantize rescue nil
       end
-      raise ArgumentError, %{ Command "#{cmd}" is unknown" } if scope.nil?
+      raise ArgumentError, %{ Command "#{cmd}" is unknown } if scope.nil?
       "#{scope}/#{cmd}".camelize.constantize.new
     end
 
