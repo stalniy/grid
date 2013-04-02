@@ -17,9 +17,5 @@ module Grid
         record.tap{ |r| r.update_attributes(row.except('id')) } unless record.nil?
       end.compact
     end
-
-    def batch?
-      true
-    end
   end
 end

@@ -10,9 +10,5 @@ module Grid
     def run_on(relation, params)
       relation.where(relation.scoped.table.primary_key.in(params[:item_ids])).destroy_all
     end
-
-    def batch?
-      true
-    end
   end
 end

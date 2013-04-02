@@ -27,7 +27,7 @@ module Grid
     end
 
     def batch?
-      false
+      @is_batch ||= self.class.name.demodulize.starts_with?('Batch')
     end
 
     def prepare_context(api, params)
