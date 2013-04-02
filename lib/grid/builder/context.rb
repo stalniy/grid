@@ -3,15 +3,19 @@ module Grid
     attr_reader :columns, :options, :scope, :name
 
     def initialize(options = {}, &block)
-      @name  = options.delete(:name)
-      @scope = options.delete(:scope)
+      @name    = options.delete(:name)
+      @scope   = options.delete(:scope)
       @options = options
-      @columns = create_columns
+      @columns = { :id => {:hidden => true} }
+      
       self.instance_eval(&block)
     end
 
-    def column(name, options = {}, &block)
-      find_or_build_column(name).merge! create_column(options, &block)
+    def column(name, attributes = {}, &block)
+      find_or_build_column(name).tap do |column|
+        column.merge! attributes
+        column[:as] = block if block_given?
+      end
     end
 
     def visible_columns
@@ -29,15 +33,15 @@ module Grid
       elsif method_name.to_s.ends_with?("ble_columns")
         feature = method_name.to_s.tap{ |m| m.slice!("_columns") }
         mark_columns_with(feature.to_sym, args)
-        @options[feature.to_s] = args
+        @options[method_name.to_sym] = args
       else
         @options[method_name] = args.size == 1 && args.first.is_a?(Hash) ? args.first : args
       end
     end
 
-    def scope_for(name, options = {}, &block)
-      column_name = options.delete(:as) || name
-      column column_name, options.merge(:as => Builder::Context.new(:scope => scope, :name => name, &block))
+    def scope_for(name, attributes = {}, &block)
+      column_name = attributes.delete(:as) || name
+      column column_name, attributes.merge(:as => Builder::Context.new(:scope => scope, :name => name, &block))
     end
 
     def assemble(records)
@@ -46,18 +50,7 @@ module Grid
 
   protected
 
-    def create_columns
-      { :id => {:hidden => true} }
-    end
-
-    def create_column(options, &block)
-      options.tap do |o|
-        o[:as] = block if block_given?
-      end
-    end
-
     def find_or_build_column(name)
-      @columns ||= {}
       @columns[name.to_sym] ||= {}
     end
 
