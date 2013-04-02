@@ -6,11 +6,10 @@ module Grid
     def initialize(relation, context)
       @api = Grid::Api.new(relation)
       @context = context
-      apply_api_context
     end
 
     def assemble_with(params)
-      options = configure(params.merge context.options)
+      options = params.merge context.options
       api.build_with!(options)
       stringify as_json_with(options)
     rescue ArgumentError => error
@@ -26,26 +25,13 @@ module Grid
     def as_json_with(options)
       {}.tap do |json|
         json[:meta], json[:columns] = context.options.except(:delegate, :search_over), context.visible_columns if options[:with_meta]
-        json[:max_page] = api.options[:max_page] unless options[:per_page] === false
+        json[:max_page] = api.options[:max_page]
         json[:items] = context.assemble(api.relation)
       end
     end
 
     def as_json_message(status, message)
-      {:status => status, :message => notice.message}
-    end
-
-    def configure(params)
-      params.tap do |o|
-        o[:cmd] = Array.wrap(o[:cmd])
-        o[:cmd].unshift('paginate') unless params[:per_page] === false
-        o[:cmd].uniq!
-        o[:searchable_columns] = context.column_names_marked_as(:searchable)
-      end
-    end
-
-    def apply_api_context
-      api.delegate(context.options[:delegate]) if context.options[:delegate]
+      {:status => status, :message => message}
     end
   end
 end

@@ -17,14 +17,10 @@ module Grid
     def visible_columns
       columns.inject({}) do |vc, column|
         name, options = column
-        vc[name] = options.except(:as, :if, :unless) unless col.last[:hidden]
+        vc[name] = options.except(:as, :if, :unless) unless options[:hidden]
         vc[name] = options[:as].visible_columns if options[:as].respond_to?(:visible_columns)
         vc
       end
-    end
-
-    def column_names_marked_as(feature)
-      columns.map{ |name, column| name if column[feature].present? }.compact
     end
 
     def method_missing(method_name, *args, &block)
@@ -33,6 +29,7 @@ module Grid
       elsif method_name.to_s.ends_with?("ble_columns")
         feature = method_name.to_s.tap{ |m| m.slice!("_columns") }
         mark_columns_with(feature.to_sym, args)
+        @options[feature.to_s] = args
       else
         @options[method_name] = args.size == 1 && args.first.is_a?(Hash) ? args.first : args
       end

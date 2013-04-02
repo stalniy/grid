@@ -12,7 +12,7 @@ module Grid
     end
 
     def build_with!(params)
-      params[:cmd].each do |cmd|
+      configure(params).fetch(:cmd).each do |cmd|
         @relation = run_command!(cmd, params) unless command(cmd).batch?
       end
     end
@@ -39,5 +39,13 @@ module Grid
       options[:delegated_commands].has_key?(cmd.to_s)
     end
 
+    def configure(params)
+      self.delegate(params[:delegate]) if params[:delegate]
+      params.tap do |o|
+        o[:cmd] = Array.wrap(o[:cmd])
+        o[:cmd].unshift(:paginate) unless params[:per_page] === false
+        o[:cmd].uniq!
+      end
+    end
   end
 end
