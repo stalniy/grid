@@ -5,7 +5,7 @@ require "grid/version"
 Gem::Specification.new do |s|
   s.name        = "grid"
   s.version     = Grid::VERSION
-  s.authors     = ["Sergiy Stotskiy"]
+  s.authors     = ["Sergiy Stotskiy", "Yuriy Buchchenko"]
   s.email       = "sergiy.stotskiy@gmail.com"
   s.homepage    = "http://github.com/stalniy/grid"
   s.license     = "MIT"
@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   s.description = <<-EOF
 Provides json API for building ActiveRecord::Relation's.  It makes much easier to fetch information from database for displaying it using JavaScript MV* based frameworks such as Knockout, Backbone, Angular, etc.
 
-Tags: json, grid, api, MVVM, Knockout, Backbone, Angular, MVC, grid, grid dsl builder, activerecord relation builder
+Tags: json, grid, api, grid builder, activerecord relation builder, relation
 EOF
 
   # s.rubyforge_project = "grid"
