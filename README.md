@@ -77,7 +77,7 @@ This command has also 2 paramters:
 
 This command requires only one hash parameter **filters** but it can be in 3 different forms:
 
-- `{ :title => "test" }` => `name LIKE "%test%"`
+- `{ :title => "test" }` => `name = "test"`
 - `{ :created_at => { :from => ... , :to => ..., :type => "time|date|nil" } }` => `created_at >= :from AND created_at <= :to`
 
     - *type* specifies type of from/to parameters (optional, can be *date* or *time*). If `:type` is *date* from/to fields will be parsed into dates using `to_time` method. If `:type` is *time* from/to fields should be timestamps.
