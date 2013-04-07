@@ -31,11 +31,11 @@ module Grid
       if @scope.respond_to?(method_name)
         @scope.send(method_name, *args, &block)
       elsif method_name.to_s.ends_with?("ble_columns")
-        feature = method_name.to_s.tap{ |m| m.slice!("_columns") }
+        feature = method_name.to_s.chomp("_columns")
         mark_columns_with(feature.to_sym, args)
         @options[method_name.to_sym] = args
       else
-        @options[method_name] = args.size == 1 && args.first.is_a?(Hash) ? args.first : args
+        @options[method_name] = args.size == 1 ? args.first : args
       end
     end
 
