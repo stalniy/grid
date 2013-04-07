@@ -2,28 +2,18 @@ module Grid
   class Builder::Context
     attr_reader :columns, :options, :scope, :name
 
-    def initialize(options = {}, &block)
-      @name    = options.delete(:name)
+    def initialize(options = {}, &dsl)
       @scope   = options.delete(:scope)
       @options = options
       @columns = { :id => {:hidden => true} }
-      
-      self.instance_eval(&block)
+
+      self.instance_eval(&dsl)
     end
 
     def column(name, attributes = {}, &block)
       find_or_build_column(name).tap do |column|
         column.merge! attributes
         column[:as] = block if block_given?
-      end
-    end
-
-    def visible_columns
-      columns.inject({}) do |vc, column|
-        name, options = column
-        vc[name] = options.except(:as, :if, :unless) unless options[:hidden]
-        vc[name] = options[:as].visible_columns if options[:as].respond_to?(:visible_columns)
-        vc
       end
     end
 
@@ -39,13 +29,21 @@ module Grid
       end
     end
 
-    def scope_for(name, attributes = {}, &block)
-      column_name = attributes.delete(:as) || name
-      column column_name, attributes.merge(:as => Builder::Context.new(:scope => scope, :name => name, &block))
+    def scope_for(scope_name, attributes = {}, &block)
+      name = attributes.delete(:as) || scope_name
+      column name, attributes.merge(:as => Builder::Context.new(:scope => scope, &block), :scope_name => scope_name)
+    end
+
+    def visible_columns
+      columns.each_with_object({}) do |column, vc|
+        name, options = column
+        vc[name] = options.except(:as, :if, :unless) unless options[:hidden]
+        vc[name] = options[:as].visible_columns if options[:as].respond_to?(:visible_columns)
+      end
     end
 
     def assemble(records)
-      records.map{ |record| build_row_for(record) }
+      records.map{ |record| assemble_row_for(record) }
     end
 
   protected
@@ -60,14 +58,14 @@ module Grid
       end
     end
 
-    def build_row_for(record)
-      columns.inject({}) do |row, column|
+    def assemble_row_for(record)
+      columns.each_with_object({}) do |column, row|
         name, options = column
-        row.merge name => build_column_for(record, name, options)
+        row[name] = assemble_column_for(record, name, options)
       end
     end
 
-    def build_column_for(record, name, options)
+    def assemble_column_for(record, name, options)
       formatter = options[:as]
 
       if formatter.respond_to?(:call)
@@ -75,7 +73,7 @@ module Grid
       elsif formatter.is_a? Symbol
         record.send(formatter)
       elsif formatter.respond_to?(:assemble)
-        formatter.assemble(record.send(formatter.name)) if may_assemble?(record, options)
+        formatter.assemble(record.send(options[:scope_name])) if may_assemble?(record, options)
       else
         record.send(name)
       end
