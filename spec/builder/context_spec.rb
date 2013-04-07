@@ -1,128 +1,77 @@
 require 'spec_helper'
 
-describe Grid::Builder::Context do 
-  let(:context) { create_context(options) }
-  let(:scope) { double(:article_path => '/article/1') }
-  let(:options) {{:name => :test_grid, :per_page => 25, :scope => scope }}
+describe Grid::Builder::Context do
+  subject{ Grid::Builder::Context }
 
-  context "when initializes" do
+  let(:options) {{ :per_page => 25, :scope => parent_scope }}
+  let(:parent_scope) { double("ParentScope") }
 
-    it "has hidden ID column by default" do
-      context.columns[:id][:hidden].should be_true
+  context "by default" do
+    it "has hidden id column" do
+      build_context.columns[:id].should have_key(:hidden)
     end
 
-    it "accepts options" do
-      context.options[:per_page].should eql 25
+    it "stores specified options" do
+      build_context.options[:per_page].should eql options[:per_page]
     end
 
-    it "requires scope" do
-      context.scope.should_not be_nil
+    it "requires block" do
+      expect{ subject.new(options) }.to raise_error ArgumentError
     end
 
-    it "evaluates given block from 'grid_for' method"
-  end
-
-  context "when evaluates block" do
-
-    it "builds column by name" do
-      context.columns.should have_key :title
-    end
-
-    it "accepts an arguments for column" do
-      context.columns[:title][:sortable].should be_true
-    end
-
-    it "accepts block as formatter" do
-      context.columns[:title].should have_key :as
-    end
-
-    it "uses view helpers" do
-      context.options[:my_link].should eql scope.article_path
-    end
-
-    it "specifies column-feature oriented helpers like 'searchable_columns'" do
-      context.columns[:title][:my_featureble].should be_true
-    end
-
-    it "allows to store any meta key-value pairs of information" do
-      context.options[:my_option].should eql "My value"
-    end
-
-    context "when defines nested grid" do
-
-      it "uses 'scope_for' helper and creates new column" do
-        context.columns.should have_key :articles
-      end
-
-      it "accepts :as option for standardize nested structure names" do
-        context.columns.should have_key :children
-      end
+    it "respects parent context" do
+      parent_scope.should_receive(:article_path)
+      build_context{ url article_path }
     end
   end
 
-  context "when assemble" do
-    let(:page) { double(:id => 1, :name => 'Name of page') }
-    let(:pages) { (1..2).inject([]) { |pages, n| pages.push page } }
-    let(:book) { double(:id => 1, :title => 'Book title') }
-    let(:books) { (1..2).inject([]) { |books, n| books.push book } }
-    let(:article) { double(:id => 1, :name => 'Article name') }
-    let(:articles) { (1..2).inject([]) { |articles, n| articles.push article } }
-    let(:category) { double(:id => 1, :title => 'title of category', :articles => articles, :books => books, :is_published => true, :pages => pages) }
-    let(:categories) { [1].inject([]) { |categories, n| categories.push category } }
-    let(:json_schema) { [
-        {
-          :id => 1,
-          :title => "Title Of Category",
-          :is_published => true,
-          :is_active => true,
-          :articles => [
-            {:id => 1, :name => "Article name"},
-            {:id => 1, :name => "Article name"},
-          ],
-          :children => [
-            {:id => 1, :title => "Book title"},
-            {:id => 1, :title => "Book title"},
-          ],
-          :pages => [
-            {:id => 1, :name => "Name of page"},
-            {:id => 1, :name => "Name of page"},
-          ],
-        },
-      ]
-    }
+  context "DSL" do
+    it "defines columns" do
+      build_context{ column :name; column :url }.columns.keys.should include(:name, :url)
+    end
 
-    it "builds an array of hashes" do
-      context.assemble(categories).should eql json_schema
+    it "specifies column specific options" do
+      columns = build_context{ column :name, :test => true, :value => 5 }.columns
+      columns[:name].values_at(:test, :value).should eql [true, 5]
+    end
+
+    it "marks columns as featurable" do
+      columns = build_context{ searchable_columns :name, :text }.columns
+      columns[:name][:searchable].should be_true
+      columns[:text][:searchable].should be_true
+    end
+
+    it "accepts single option's values" do
+      options = build_context{ title "test"; email "test@example.com" }.options
+      options.values_at(:title, :email).should eql %w{ test test@example.com }
+    end
+
+    it "accepts multiple option's values" do
+      build_context{ my :name, :age, :pan }.options[:my].should eql [:name, :age, :pan]
+    end
+
+    it "accepts column generator" do
+      build_context{ column(:name){ "test" } }.columns[:name][:as].should respond_to(:call)
+    end
+
+    it "defines nested scope" do
+      context = build_context{ scope_for(:articles) { column :title } }
+      context.columns[:articles][:as].should be_kind_of subject
+    end
+
+    it "defines nested scope with specified name" do
+      context = build_context{ scope_for(:articles, :as => :children) { column :title } }
+      context.columns[:children][:as].should be_kind_of subject
     end
   end
 
-  it "defines visible columns" do 
-    context.visible_columns.keys.should eql [:title, :is_published, :is_active, :articles, :children, :pages]
+  context "when collects visible columns" do
+    it "returns only visible columns"
+    it "respects visible columns of nested scopes"
   end
 
-
-  def create_context(options)
-    Grid::Builder::Context.new(options) do
-      my_option "My value"
-      my_featureble_columns :title
-      my_link article_path 
-
-      column(:title, :sortable => true) { |category| category.title.titleize }
-      column :is_published
-      column :is_active, :as => :is_published
-
-      scope_for :articles, :if => :is_published do
-        column :name
-      end
-
-      scope_for(:books, :as => :children, :unless => lambda { |category| !category.is_published }) do
-        column :title
-      end
-
-      scope_for :pages do
-        column :name
-      end
-    end
+  def build_context(&dsl)
+    dsl = Proc.new{} unless block_given?
+    subject.new(options, &dsl)
   end
-
 end
