@@ -1,8 +1,6 @@
 Yet Another Grid
 =========
 
-# !!! Under QA !!!
-
 This plugin is designed to provide API for building json response based on `ActiveRecord::Relation` objects.
 It makes much easier to fetch information from database for displaying it using JavaScript MV* based frameworks such as Knockout, Backbone, Angular, etc.
 
@@ -29,7 +27,7 @@ end
 View:
 ```ruby
 # app/views/articles/index.json.grid_builder
-grid_for @articles :per_page => 25 do
+grid_for @articles, :per_page => 25 do
   searchable_columns :title
 
   column :title
