@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Grid::Api::Command::Sort do
+describe TheGrid::Api::Command::Sort do
   let(:table)    { double(:name => "table_for_sort", :present? => true).as_null_object }
   let(:relation) { double(:table_name => table.name, :table => table) }
   let(:options)  { {:field => "name", :order => "desc" } }

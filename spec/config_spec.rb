@@ -1,14 +1,14 @@
 require 'spec_helper'
 
-describe Grid::Config do
+describe TheGrid::Config do
   context "when initializes" do
     its(:commands_lookup_scopes) { should eql [] }
     its(:prettify_json) { should be_false }
   end
 
   context "when applying specified values" do
-    let(:command) { Grid::Api::Command }
-    let(:builder) { Grid::Builder::Json }
+    let(:command) { TheGrid::Api::Command }
+    let(:builder) { TheGrid::Builder::Json }
     before(:each) { configure(subject) }
 
     it "registers specified lookup scopes from configuration" do
@@ -24,7 +24,7 @@ describe Grid::Config do
     end
   end
 
-private 
+private
 
   def configure(config)
     config.commands_lookup_scopes += %w{ command_scope_1 command_scope_2 }

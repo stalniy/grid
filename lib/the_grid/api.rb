@@ -1,4 +1,4 @@
-module Grid
+module TheGrid
   class Api
     attr_reader :relation, :options
 
@@ -32,7 +32,7 @@ module Grid
   protected
 
     def command(type)
-      ::Grid::Api::Command.find(type)
+      ::TheGrid::Api::Command.find(type)
     end
 
     def command_delegated?(cmd)

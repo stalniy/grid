@@ -1,2 +1,2 @@
 require 'active_support/all'
-require 'grid'
+require 'the_grid'

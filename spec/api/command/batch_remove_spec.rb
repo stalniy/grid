@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Grid::Api::Command::BatchRemove do
+describe TheGrid::Api::Command::BatchRemove do
   let(:table)    { double(:primary_key => double.as_null_object) }
   let(:relation) { double(:table => table).tap{ |r| r.stub(:scoped => r, :where => r) } }
 

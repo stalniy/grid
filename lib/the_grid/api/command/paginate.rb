@@ -1,4 +1,4 @@
-module Grid
+module TheGrid
   class Api::Command::Paginate < Api::Command
     cattr_accessor(:default_per_page){ 10 }
 

@@ -1,4 +1,4 @@
-module Grid
+module TheGrid
   class Api::Command
 
     def self.find(cmd)
@@ -11,7 +11,7 @@ module Grid
     end
 
     def self.scopes
-      @@scopes ||= ["grid/api/command"]
+      @@scopes ||= ["the_grid/api/command"]
     end
 
     def self.build(cmd)

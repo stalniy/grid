@@ -53,8 +53,8 @@ Each parameter relates to options of a command. The only exception is **with_met
 ### Commands
 
 There are 2 types of commands: batch commands (e.g. *update, remove*) and select commands (e.g. *search*, *paginate*, *sort*, *filter*).
-Select commands can be processed per one request (i.e. stacked) by **Grid::Builder** (method `execute_on` of such commands always returns `ActiveRecord::Relation`).
-Batch commands can't be processed by **Grid::Builder** even more they are ignored (method `execute_on` returns array of processed records or boolean value).
+Select commands can be processed per one request (i.e. stacked) by **TheGrid::Builder** (method `execute_on` of such commands always returns `ActiveRecord::Relation`).
+Batch commands can't be processed by **TheGrid::Builder** even more they are ignored (method `execute_on` returns array of processed records or boolean value).
 There are few predefined commands: `paginate`, `search`, `sort`, `filter`, `batch_update`, `batch_remove`.
 
 #### Paginate
@@ -99,18 +99,18 @@ Value of array is ignored if it's non-integer.
 
 ### Run batch commands
 
-It's impossible to run batch commands using `Grid::Builder`.
+It's impossible to run batch commands using `TheGrid::Builder`.
 By default command is considered as batch one if its class name starts with **Batch**. If you want to override this behavior you need to implement instance method `batch?`.
 So, client has to manually build grid instance and call `run_command!` method:
-```ruby 
-Grid.build_for(Article).run_command!('batch_update', params)
+```ruby
+TheGrid.build_for(Article).run_command!('batch_update', params)
 ```
 Actually it's possible to run any command as shown in line above.
 Example of controller's batch action:
 ```ruby
 class ArticlesController < ApplicationController
   def batch_update
-    articles = Grid.build_for(Article).run_command!('batch_update', :items => params[:articles])
+    articles = TheGrid.build_for(Article).run_command!('batch_update', :items => params[:articles])
     render :json => build_grid_response_for(articles, :success => "Articles has been successfully updated")
   rescue ArgumentError => e
     render :json => { :message => e.message, :status => :error }
@@ -135,7 +135,7 @@ Command class should implement at least 2 methods: `configure` and `run_on` (if 
 `configure` method should return validated parameters or raise an error if one of the required options is missed. Example:
 ```ruby
 module GridCommands
-  class BatchSuspend < Grid::Api::Command
+  class BatchSuspend < TheGrid::Api::Command
     def configure(relation, params)
       ids = params[:item_ids].reject{ |id| id.to_i <= 0 }
       raise ArgumentError, "There is nothing to update" if ids.blank?
@@ -151,7 +151,7 @@ end
 For running this command it's also necessarely to update `commands_lookup_scopes`. It can be done inside grid intializer file:
 ```ruby
 # config/initializers/grid.rb
-Grid.configure do |config|
+TheGrid.configure do |config|
   # Specifies scopes for custom commands
   config.commands_lookup_scopes += %w{ grid_commands }
   # ....
@@ -159,12 +159,12 @@ end
 ```
 Then it will be possible to run:
 ```ruby
-Grid.build_for(Article).run_command!('batch_suspend', :item_ids => params[:id])
+TheGrid.build_for(Article).run_command!('batch_suspend', :item_ids => params[:id])
 ```
 Using lookup technique it's possible to override existing commands. Suppose there is a need to customize `batch_update` command to allow non-integer ids:
 ```ruby
 module GridCommands
-  class BatchUpdate < Grid::Api::Command::BatchUpdate
+  class BatchUpdate < TheGrid::Api::Command::BatchUpdate
     def configure(relation, params)
       items = params[:items].reject{ |item| item['id'].to_s.strip.blank? }
       raise ArgumentError, "There is nothing to update" if items.blank?

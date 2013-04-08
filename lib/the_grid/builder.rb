@@ -1,4 +1,4 @@
-module Grid
+module TheGrid
   class Builder
     private_class_method :new
 
@@ -10,7 +10,7 @@ module Grid
       end
 
       %{
-        ::Grid::Builder.assemble(:view_type => ::Grid::Builder::Json, :scope => self) {
+        ::TheGrid::Builder.assemble(:view_type => ::TheGrid::Builder::Json, :scope => self) {
           #{source}
         }
       }

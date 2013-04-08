@@ -1,10 +1,10 @@
 # -*- encoding: utf-8 -*-
 $:.push File.expand_path("../lib", __FILE__)
-require "grid/version"
+require "the_grid/version"
 
 Gem::Specification.new do |s|
-  s.name        = "grid"
-  s.version     = Grid::VERSION
+  s.name        = "the_grid"
+  s.version     = TheGrid::VERSION
   s.authors     = ["Sergiy Stotskiy", "Yuriy Buchchenko"]
   s.email       = "sergiy.stotskiy@gmail.com"
   s.homepage    = "http://github.com/stalniy/grid"
@@ -18,7 +18,7 @@ Provides json API for building ActiveRecord::Relation's.  It makes much easier t
 Tags: json, grid, api, grid builder, activerecord relation builder, relation
 EOF
 
-  # s.rubyforge_project = "grid"
+  # s.rubyforge_project = "the_grid"
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")

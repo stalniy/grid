@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-describe Grid::Builder::Json do
-  subject { Grid::Builder::Json.new(relation, context) }
+describe TheGrid::Builder::Json do
+  subject { TheGrid::Builder::Json.new(relation, context) }
 
   before(:each) { subject.api.stub(:compose!) { subject.api.options[:max_page] = 25 } }
 
@@ -34,7 +34,7 @@ describe Grid::Builder::Json do
 
 
   def create_context
-    Grid::Builder::Context.new do
+    TheGrid::Builder::Context.new do
       api_key "hello_world"
       delegate  :sort => :articles, :filter => :articles
 

@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-describe Grid::Builder::Context do
-  subject{ Grid::Builder::Context }
+describe TheGrid::Builder::Context do
+  subject{ TheGrid::Builder::Context }
 
   let(:parent_scope) { double(:dsl => Proc.new{ column :title }) }
   let(:options) {{ :per_page => 25, :scope => parent_scope }}
@@ -176,7 +176,7 @@ describe Grid::Builder::Context do
 
   def build_context(&dsl)
     dsl = Proc.new{} unless block_given?
-    Grid::Builder::Context.new(options, &dsl)
+    TheGrid::Builder::Context.new(options, &dsl)
   end
 
 end

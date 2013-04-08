@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Grid::Api::Command::Search do
+describe TheGrid::Api::Command::Search do
   let(:columns)  {{ :name => string_column, :status => string_column, :id => double(:type => :int) }}
   let(:relation) { double(:columns_hash => columns, :column_names => columns.keys, :table => columns).as_null_object }
 

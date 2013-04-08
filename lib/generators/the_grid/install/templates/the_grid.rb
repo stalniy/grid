@@ -1,4 +1,4 @@
-Grid.configure do |config|
+TheGrid.configure do |config|
   # Specifies scopes for custom commands
   # config.commands_lookup_scopes += %w{ command_scope_1 command_scope_2 }
 

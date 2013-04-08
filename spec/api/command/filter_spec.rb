@@ -38,7 +38,7 @@ shared_examples "for a range filter" do
   end
 end
 
-describe Grid::Api::Command::Filter do
+describe TheGrid::Api::Command::Filter do
   let(:table)    { double(:blank? => false).as_null_object }
   let(:relation) { double(:table => table).tap{ |r| r.stub(:where => r) } }
 

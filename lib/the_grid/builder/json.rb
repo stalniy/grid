@@ -1,10 +1,10 @@
-module Grid
+module TheGrid
   class Builder::Json
     cattr_accessor :prettify_json
     attr_reader :api, :context
 
     def initialize(relation, context)
-      @api = Grid::Api.new(relation)
+      @api = TheGrid::Api.new(relation)
       @context = context
     end
 

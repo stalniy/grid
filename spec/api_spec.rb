@@ -1,11 +1,11 @@
 require "spec_helper"
 
-describe Grid::Api do
-  subject{ Grid::Api.new(relation) }
+describe TheGrid::Api do
+  subject{ TheGrid::Api.new(relation) }
 
   let(:child_relation) { double("Child Relation").as_null_object }
   let(:relation) { double("Relation", :reflections => { :child_relation => child_relation }).as_null_object }
-  let(:commands) { lambda{ |name| ::Grid::Api::Command.find(name) } }
+  let(:commands) { lambda{ |name| ::TheGrid::Api::Command.find(name) } }
 
   context "when run single command" do
     let(:options)  {{ :field => "title", :order => "desc" }}

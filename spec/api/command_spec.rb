@@ -1,11 +1,11 @@
 require 'spec_helper'
 
 module GridCommands
-  class Sort < Grid::Api::Command::Sort; end
+  class Sort < TheGrid::Api::Command::Sort; end
 end
 
-describe Grid::Api::Command do
-  subject{ Grid::Api::Command }
+describe TheGrid::Api::Command do
+  subject{ TheGrid::Api::Command }
   let(:commands_scope) { GridCommands }
 
   it "can be executed on relation" do
@@ -23,7 +23,7 @@ describe Grid::Api::Command do
   it "raise error if command not found" do
     expect{ subject.find(:unknown_cmd) }.to raise_error ArgumentError
   end
-  
+
   it "has only one scope for commands by default" do
     subject.scopes.should eql [ subject.to_s.underscore ]
   end

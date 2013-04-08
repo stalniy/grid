@@ -1,4 +1,4 @@
-module Grid
+module TheGrid
   class Builder::Context
     attr_reader :columns, :options, :scope, :name
 

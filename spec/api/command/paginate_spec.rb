@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Grid::Api::Command::Paginate do
+describe TheGrid::Api::Command::Paginate do
   let(:relation){ double("ActiveRecord::Relation", :count => 25).as_null_object }
 
   context "when options are missed" do

@@ -1,4 +1,4 @@
-module Grid
+module TheGrid
   class Config
     attr_accessor :default_max_per_page, :prettify_json, :commands_lookup_scopes
 
@@ -14,5 +14,5 @@ module Grid
     end
   end
 
-  ActionView::Template.register_template_handler :grid_builder, ::Grid::Builder if defined?(ActionView::Template)
+  ActionView::Template.register_template_handler :grid_builder, ::TheGrid::Builder if defined?(ActionView::Template)
 end

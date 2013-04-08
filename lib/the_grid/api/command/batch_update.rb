@@ -1,4 +1,4 @@
-module Grid
+module TheGrid
   class Api::Command::BatchUpdate < Api::Command
     def configure(relation, params)
       {}.tap do |o|

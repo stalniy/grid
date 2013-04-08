@@ -1,4 +1,4 @@
-module Grid
+module TheGrid
   class Api::Command::Filter < Api::Command
     def configure(relation, params)
       params.fetch(:filters, {}).dup
