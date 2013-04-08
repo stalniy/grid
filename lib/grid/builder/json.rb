@@ -10,7 +10,7 @@ module Grid
 
     def assemble_with(params)
       options = params.merge context.options
-      api.build_with!(options)
+      api.compose!(options)
       stringify as_json_with(options)
     rescue ArgumentError => error
       stringify as_json_message('error', error.message)

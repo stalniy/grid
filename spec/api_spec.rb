@@ -30,7 +30,7 @@ describe Grid::Api do
   context "when run few commands" do
     let(:params)  {{ :cmd => [:sort, :search, :batch_update], :field => "title", :query => "test" }}
     before(:each) { subject.stub(:run_command!) }
-    after(:each)  { subject.build_with!(params) }
+    after(:each)  { subject.compose!(params) }
 
     it "skip batch commands" do
       commands[:batch_update].should_not_receive(:execute_on)

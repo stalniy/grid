@@ -11,7 +11,7 @@ module Grid
       options[:delegated_commands].merge! commands.stringify_keys
     end
 
-    def build_with!(params)
+    def compose!(params)
       configure(params).fetch(:cmd).each do |cmd|
         @relation = run_command!(cmd, params) unless command(cmd).batch?
       end

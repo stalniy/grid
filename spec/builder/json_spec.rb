@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Grid::Builder::Json do
   subject { Grid::Builder::Json.new(relation, context) }
 
-  before(:each) { subject.api.stub(:build_with!) { subject.api.options[:max_page] = 25 } }
+  before(:each) { subject.api.stub(:compose!) { subject.api.options[:max_page] = 25 } }
 
   let(:relation) { double('Relation').as_null_object }
   let(:context) { create_context.tap { |c| c.stub(:assemble => [1,2,3,4]) } }
@@ -14,7 +14,7 @@ describe Grid::Builder::Json do
   let(:assembled_result) { JSON.parse(subject.assemble_with(params)) }
 
   it "merges params with context options" do
-    subject.api.should_receive(:build_with!).with(params.merge context.options)
+    subject.api.should_receive(:compose!).with(params.merge context.options)
     subject.assemble_with params
   end
 
@@ -28,7 +28,7 @@ describe Grid::Builder::Json do
   end
 
   it "generates json notification when get wrong argument" do
-    subject.api.stub(:build_with!) { raise ArgumentError, "123" }
+    subject.api.stub(:compose!) { raise ArgumentError, "123" }
     assembled_result.should eql({"status" => "error", "message" => "123"})
   end
 
