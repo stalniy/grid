@@ -54,7 +54,7 @@ Each parameter relates to options of a command. The only exception is **with_met
 
 There are 2 types of commands: batch commands (e.g. *update, remove*) and select commands (e.g. *search*, *paginate*, *sort*, *filter*).
 Select commands can be processed per one request (i.e. stacked) by **Grid::Builder** (method `execute_on` of such commands always returns `ActiveRecord::Relation`).
-Batch commands can't be processed by **Grid::Builder** even more they are ignored (method `execute_on` returns array of processed records or boolean value). By default each command which class starts with `batch` is considered as batch. If you want to override this behavior you need to override its `batch?` method.
+Batch commands can't be processed by **Grid::Builder** even more they are ignored (method `execute_on` returns array of processed records or boolean value).
 There are few predefined commands: `paginate`, `search`, `sort`, `filter`, `batch_update`, `batch_remove`.
 
 #### Paginate
@@ -99,7 +99,9 @@ Value of array is ignored if it's non-integer.
 
 ### Run batch commands
 
-It's impossible to run batch commands using `Grid::Builder`. So, client has to manually build grid instance and call `run_command!` method:
+It's impossible to run batch commands using `Grid::Builder`.
+By default command is considered as batch one if its class name starts with **Batch**. If you want to override this behavior you need to implement instance method `batch?`.
+So, client has to manually build grid instance and call `run_command!` method:
 ```ruby 
 Grid.build_for(Article).run_command!('batch_update', params)
 ```
