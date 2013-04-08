@@ -18,7 +18,7 @@ Provides json API for building ActiveRecord::Relation's.  It makes much easier t
 Tags: json, grid, api, grid builder, activerecord relation builder, relation
 EOF
 
-  # s.rubyforge_project = "grid"
+  s.rubyforge_project = "grid"
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
