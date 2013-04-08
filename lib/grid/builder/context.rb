@@ -83,7 +83,7 @@ module Grid
       condition = options[:if] || options[:unless]
 
       if condition.is_a? Symbol
-        result = build_column_for(record, condition, columns[condition])
+        result = assemble_column_for(record, condition, columns[condition])
       elsif condition.respond_to?(:call)
         result = condition.call(record)
       else
