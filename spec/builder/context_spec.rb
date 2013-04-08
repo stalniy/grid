@@ -92,7 +92,7 @@ describe TheGrid::Builder::Context do
     let(:fields)  {{ :title => "item", :id => 5, :live? => false, :short_details => "details" }}
     let(:records) {[ double(fields), double(fields.merge :live? => true) ]}
 
-    context "records" do
+    describe "result" do
       subject { context.assemble(records) }
       let(:context) { build_plane_context }
 
@@ -102,7 +102,7 @@ describe TheGrid::Builder::Context do
       it { should be_all{ |r| r.keys == context.columns.keys }}
     end
 
-    context "any structure" do
+    describe "any structure" do
       subject{ build_plane_context }
       after(:each){ subject.assemble(records) }
 
@@ -119,7 +119,7 @@ describe TheGrid::Builder::Context do
       end
     end
 
-    context "tree-like structure" do
+    describe "tree-like structure" do
       let(:conditional_option) { :if }
       let(:fields) {{ :id => 5, :live? => false, :permanent => [], :conditional => [], :conditional_block => [] }}
       after(:each) { build_tree_like_context(conditional_option).assemble(records) }
