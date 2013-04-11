@@ -4,8 +4,8 @@ module TheGrid
 
     def initialize(options = {}, &dsl)
       @scope   = options.delete(:scope)
+      @columns = build_columns_with(options.delete(:id))
       @options = options
-      @columns = { :id => {:hidden => true} }
 
       self.instance_eval(&dsl)
     end
@@ -23,7 +23,7 @@ module TheGrid
       elsif method_name.to_s.ends_with?("ble_columns")
         feature = method_name.to_s.chomp("_columns")
         mark_columns_with(feature.to_sym, args)
-        @options[method_name.to_sym] = args
+        @options[method_name] = args
       else
         @options[method_name] = args.size == 1 ? args.first : args
       end
@@ -47,6 +47,12 @@ module TheGrid
     end
 
   protected
+
+    def build_columns_with(id_field)
+      columns = {}
+      columns[id_field || :id] = {:hidden => true} unless id_field === false
+      columns
+    end
 
     def find_or_build_column(name)
       @columns[name.to_sym] ||= {}
