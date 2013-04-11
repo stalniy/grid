@@ -9,7 +9,7 @@ module TheGrid
     end
 
     def assemble_with(params)
-      options = params.merge context.options
+      options = params.merge context.params
       api.compose!(options)
       stringify as_json_with(options)
     rescue ArgumentError => error
