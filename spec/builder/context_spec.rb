@@ -49,13 +49,17 @@ describe TheGrid::Builder::Context do
       columns[:name].values_at(:test, :value).should eql [true, 5]
     end
 
-    it "marks columns as featurable" do
+    it "marks columns as featured" do
       columns = build_context{ searchable_columns :name, :text }.columns
       columns.slice(:name, :text).should be_all{ |k, v| v[:searchable] == true }
     end
 
-    it "stores featureable columns in options" do
-      build_context{ searchable_columns :name, :text }.options[:searchable_columns].should eql [:name, :text]
+    it "defines featured columns in params" do
+      build_context{ searchable_columns :name, :text }.params[:searchable_columns].should eql [:name, :text]
+    end
+
+    it "does not define featured columns in options" do
+      build_context{ searchable_columns :name, :text }.options[:searchable_columns].should be_blank
     end
 
     it "accepts single option's values" do
