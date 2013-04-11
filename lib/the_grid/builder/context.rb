@@ -1,11 +1,11 @@
 module TheGrid
   class Builder::Context
-    attr_reader :columns, :options, :scope
+    attr_reader :columns, :scope
 
     def initialize(options = {}, &dsl)
-      @scope   = options.delete(:scope)
-      @columns = build_columns_with(options.delete(:id))
-      @options = options
+      @scope    = options.delete(:scope)
+      @columns  = build_columns_with(options.delete(:id))
+      @options  = options.merge(:features => [])
 
       self.instance_eval(&dsl)
     end
@@ -21,9 +21,8 @@ module TheGrid
       if @scope.respond_to?(method_name)
         @scope.send(method_name, *args, &block)
       elsif method_name.to_s.ends_with?("ble_columns")
-        feature = method_name.to_s.chomp("_columns")
-        mark_columns_with(feature.to_sym, args)
-        @options[method_name] = args
+        @options[:features] << method_name.to_s.chomp("_columns").to_sym
+        mark_columns_with(@options[:features].last, args)
       else
         @options[method_name] = args.size == 1 ? args.first : args
       end
@@ -32,6 +31,14 @@ module TheGrid
     def scope_for(scope_name, attributes = {}, &block)
       name = attributes.delete(:as) || scope_name
       column name, attributes.merge(:as => Builder::Context.new(:scope => scope, &block), :scope_name => scope_name)
+    end
+
+    def options
+      @options.except(:features)
+    end
+
+    def params
+      self.options.merge self.featured_columns
     end
 
     def visible_columns
@@ -61,6 +68,12 @@ module TheGrid
     def mark_columns_with(feature, column_names)
       column_names.each do |name|
         find_or_build_column(name).store(feature, true)
+      end
+    end
+
+    def featured_columns
+      @options[:features].each_with_object({}) do |feature, types|
+        types[:"#{feature}_columns"] = columns.select{ |name, attrs| attrs[feature] }.keys
       end
     end
 
