@@ -7,8 +7,18 @@ describe TheGrid::Builder::Context do
   let(:options) {{ :per_page => 25, :scope => parent_scope }}
 
   context "by default" do
-    it "has hidden id column" do
+    it "creates hidden id column" do
       build_context.columns[:id].should have_key(:hidden)
+    end
+
+    it "creates hidden column with specified primary key name" do
+      options[:id] = :key
+      build_context.columns[:key].should have_key(:hidden)
+    end
+
+    it "does not create column for primary key if :id equals false" do
+      options[:id] = false
+      build_context.columns.should have(0).items
     end
 
     it "stores specified options" do
