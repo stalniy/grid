@@ -1,6 +1,6 @@
 module TheGrid
   class Builder::Context
-    attr_reader :columns, :options, :scope, :name
+    attr_reader :columns, :options, :scope
 
     def initialize(options = {}, &dsl)
       @scope   = options.delete(:scope)
