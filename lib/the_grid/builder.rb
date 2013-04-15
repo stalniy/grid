@@ -10,10 +10,15 @@ module TheGrid
       end
 
       %{
-        ::TheGrid::Builder.assemble(:view_type => ::TheGrid::Builder::Json, :scope => self) {
+        ::TheGrid::Builder.assemble(:format => #{template.formats.first.inspect}, :scope => self) {
           #{source}
         }
       }
+    end
+
+    def self.detect_view(format)
+      @@view_types ||= {}
+      @@view_types[format] ||= "the_grid/builder/#{format}".camelize.constantize
     end
 
     def self.assemble(options, &block)
@@ -21,10 +26,10 @@ module TheGrid
     end
 
     def initialize(options, &block)
-      options.assert_valid_keys(:scope, :view_type)
+      options.assert_valid_keys(:scope, :format)
 
       @_scope = options.delete(:scope)
-      @_view_type = options.delete(:view_type)
+      @_view_type = self.class.detect_view(options.delete(:format))
 
       copy_instance_variables_from(@_scope) if @_scope
       self.instance_eval(&block)
