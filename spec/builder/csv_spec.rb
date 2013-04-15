@@ -1,53 +1,40 @@
 require 'spec_helper'
+require_relative 'view_builder_helper'
 
 describe TheGrid::Builder::Csv do
-  let(:relation) { double('Relation') }
-  let(:record) {{:name => "Name", :is_active => "Active", :description => "Descr"}}
-  let(:records) { [record, record, record] }
+  subject{ TheGrid::Builder::Csv.new(records, build_context) }
 
-  it "merges params with context options" do
-    context = build_context { column :name }
-    subject = build_subject(context)
-    subject.api.should_receive(:compose!).with(context.options)
-    subject.assemble_with({})
+  include_examples "for Grid View Builder"
+  before(:each) { subject.api.stub(:compose!){ subject.api.options[:max_page] = 25 } }
+
+  let(:record)  {{ :name => "Name", :status => "Active", :text => "Text" }}
+  let(:records) {[ record, record, record ]}
+  let(:params)  {{ :cmd => [:sort], :field => :name, :order => :desc }}
+
+  it "generates expected csv string" do
+    subject.assemble_with(params).should eql generate_csv(records, subject.context.options[:headers])
   end
 
-  it "generates csv" do
-    context = build_context do
-      headers "Name", "Status", "Short description"
-
-      column :name
-      column :is_active
-      column :description
-    end
-    subject = build_subject(context)
-    subject.assemble_with({}).should eql generate_csv(records, context.options[:headers])
-  end
-
-  it "titleizes column names if 'headers' not specified" do
-    context = build_context do
-      column :name
-      column :is_active
-      column :description
-    end
-    subject = build_subject(context)
-    titleized_headers = context.visible_columns.keys.map {|c| c.to_s.titleize }
-    subject.assemble_with({}).should eql generate_csv(records, titleized_headers)
+  it "uses titleized column names if headers are not specified" do
+    subject.context.stub(:options => {})
+    headers = subject.context.visible_columns.keys.map{|c| c.to_s.titleize }
+    subject.assemble_with(params).should eql generate_csv(records, headers)
   end
 
   def generate_csv(records, headers)
     CSV.generate do |csv|
       csv << headers
-      records.each { |item| csv << item.values }
+      records.each{ |item| csv << item.values }
     end
   end
 
-  def build_context(&dsl)
-    TheGrid::Builder::Context.new(&dsl).tap{ |c| c.stub(:assemble => records) }
-  end
-
-  def build_subject(context)
-    TheGrid::Builder::Csv.new(relation, context).tap { |b| b.api.stub(:compose!) }
+  def build_context
+    TheGrid::Builder::Context.new do
+      headers "Title", "Status", "Description"
+      column :name
+      column :status
+      column :text
+    end
   end
 
 end

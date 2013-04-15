@@ -1,13 +1,14 @@
 require 'spec_helper'
+require_relative 'view_builder_helper'
 
 describe TheGrid::Builder::Json do
-  subject { TheGrid::Builder::Json.new(relation, context) }
+  subject{ TheGrid::Builder::Json.new(Object.new, build_context) }
 
-  before(:each) { subject.api.stub(:compose!) { subject.api.options[:max_page] = 25 } }
+  include_examples "for Grid View Builder"
+  before(:each) { subject.api.stub(:compose!){ subject.api.options[:max_page] = 25 } }
 
-  let(:relation) { double('Relation').as_null_object }
-  let(:context) { create_context.tap { |c| c.stub(:assemble => [1,2,3,4]) } }
-  let(:params) {{  :cmd => [:sort], :field => :name, :order => :desc }}
+  let(:records) {[ 1, 2, 3, 4 ]}
+  let(:params)  {{ :cmd => [:sort], :field => :name, :order => :desc }}
 
   let(:meta) {{ "meta" => {"api_key" => context.options[:api_key]}, "columns" => columns }}
   let(:columns) { context.visible_columns.stringify_keys.map{ |n, o| o.merge "column_name" => n } }
@@ -15,7 +16,7 @@ describe TheGrid::Builder::Json do
   let(:assembled_result) { JSON.parse(subject.assemble_with(params)) }
 
   it "merges params with context options" do
-    subject.api.should_receive(:compose!).with(params.merge context.options)
+    subject.api.should_receive(:compose!).with(params.merge subject.context.options)
     subject.assemble_with params
   end
 
@@ -29,16 +30,13 @@ describe TheGrid::Builder::Json do
   end
 
   it "generates json notification when get wrong argument" do
-    subject.api.stub(:compose!) { raise ArgumentError, "123" }
-    assembled_result.should eql({"status" => "error", "message" => "123"})
+    subject.api.stub(:compose!) { raise ArgumentError, "my message" }
+    assembled_result.should eql "status" => "error", "message" => "my message"
   end
 
-
-  def create_context
+  def build_context
     TheGrid::Builder::Context.new do
-      api_key "hello_world"
-      delegate  :sort => :articles, :filter => :articles
-
+      api_key 1234567
       column :name
       column :is_active
     end
