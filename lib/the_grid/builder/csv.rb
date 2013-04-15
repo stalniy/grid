@@ -25,7 +25,7 @@ module TheGrid
     end
 
     def headers
-      context.options[:headers] || context.visible_columns.keys.map { |col| col.to_s.titleize }
+      context.options[:headers] || context.columns.keys.map { |col| col.to_s.titleize }
     end
 
   end
