@@ -7,9 +7,9 @@ describe TheGrid::Builder::Csv do
   include_examples "for Grid View Builder"
   before(:each) { subject.api.stub(:compose!){ subject.api.options[:max_page] = 25 } }
 
-  let(:record)  {{ :name => "Name", :status => "Active", :text => "Text" }}
+  let(:record)  {{ :id => 1, :name => "Name", :status => "Active", :text => "Text" }}
   let(:records) {[ record, record, record ]}
-  let(:params)  {{ :cmd => [:sort], :field => :name, :order => :desc }}
+  let(:params)  {{ :cmd => [:sort], :field => :name, :order => :desc, :per_page => 10 }}
 
   it "generates expected csv string" do
     subject.assemble_with(params).should eql generate_csv(records, subject.context.options[:headers])
@@ -17,9 +17,10 @@ describe TheGrid::Builder::Csv do
 
   it "uses titleized column names if headers are not specified" do
     subject.context.stub(:options => {})
-    headers = subject.context.visible_columns.keys.map{|c| c.to_s.titleize }
+    headers = record.keys.map{|c| c.to_s.titleize }
     subject.assemble_with(params).should eql generate_csv(records, headers)
   end
+
 
   def generate_csv(records, headers)
     CSV.generate do |csv|
@@ -30,7 +31,7 @@ describe TheGrid::Builder::Csv do
 
   def build_context
     TheGrid::Builder::Context.new do
-      headers "Title", "Status", "Description"
+      headers "Id", "Title", "Status", "Description"
       column :name
       column :status
       column :text
