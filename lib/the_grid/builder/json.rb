@@ -26,13 +26,20 @@ module TheGrid
       json = {:max_page => api.options[:max_page], :items => context.assemble(api.relation)}
       if options[:with_meta]
         json[:meta] = context.options.except(:delegate, :search_over)
-        json[:columns] = context.visible_columns.map{ |name, options| options.merge :column_name => name }
+        json[:columns] = columns_as_array(context.visible_columns)
       end
       json
     end
 
     def as_json_message(status, message)
       {:status => status, :message => message}
+    end
+
+    def columns_as_array(columns)
+      columns.map do |name, options|
+        options[:columns] = columns_as_array(options[:columns]) if options[:columns].is_a? Hash
+        options.merge :name => name
+      end
     end
 
   end

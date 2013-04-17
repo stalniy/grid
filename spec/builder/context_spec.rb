@@ -102,7 +102,7 @@ describe TheGrid::Builder::Context do
     end
 
     it "respects visible columns of nested scopes" do
-      build_context{ scope_for(:children, &dsl) }.visible_columns[:children].keys.should eql [:title]
+      build_context{ scope_for(:children, &dsl) }.visible_columns[:children][:columns].keys.should eql [:title]
     end
   end
 
