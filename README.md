@@ -259,12 +259,12 @@ The previous example is converted into:
   },
   "columns": [
     {
-      "column_name": "title",
+      "name": "title",
       "searchable": true,
       "editable": true
     },
     {
-      "column_name": "created_at",
+      "name": "created_at",
       "searchable": true
     }
   ],
