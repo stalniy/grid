@@ -256,15 +256,17 @@ The previous example is converted into:
     "server_time": "2013-03-17 02:11:05 +0200",
     "my_option": "Something important for Frontend side"
   },
-  "columns": {
-    "title": {
+  "columns": [
+    {
+      "column_name": "title",
       "searchable": true,
       "editable": true
     },
-    "created_at": {
+    {
+      "column_name": "created_at",
       "searchable": true
     }
-  },
+  ],
   "max_page": 3,
   "items": [
     {
