@@ -25,7 +25,7 @@ EOF
 
   s.add_dependency 'activerecord', '>= 3.0'
   s.add_dependency 'json'
-  s.post_install_message <<-_MSG_
+  s.post_install_message = <<-_MSG_
     Columns' definition in json response is changed
     because javascript does not remember the order of properties in object.
   _MSG_
