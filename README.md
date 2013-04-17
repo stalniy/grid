@@ -239,6 +239,7 @@ Sometimes it's reasonable to add extra meta information into response:
 ```ruby
 grid_for @articles, :per_page => 2 do
   searchable_columns :title, :created_at
+  editable_columns :title
 
   # specify any kind of meta parameter
   server_time Time.now
