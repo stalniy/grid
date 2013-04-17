@@ -18,6 +18,11 @@ Provides json API for building ActiveRecord::Relation's.  It makes much easier t
 Tags: json, grid, api, grid builder, activerecord relation builder, relation
 EOF
 
+  s.post_install_message = <<-_MSG_
+    Columns' definition in json response is changed
+    because javascript does not remember the order of properties in object.
+  _MSG_
+
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
@@ -25,12 +30,7 @@ EOF
 
   s.add_dependency 'activerecord', '>= 3.0'
   s.add_dependency 'json'
-  s.post_install_message = <<-_MSG_
-    Columns' definition in json response is changed
-    because javascript does not remember the order of properties in object.
-  _MSG_
-
-  # specify any dependencies here; for example:
+  
   s.add_development_dependency "bundler", ">= 1.0.0"
   s.add_development_dependency "rspec", "~> 2.13"
 end
