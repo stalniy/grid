@@ -42,8 +42,7 @@ module TheGrid
     end
 
     def visible_columns
-      columns.each_with_object({}) do |column, vc|
-        name, options = column
+      columns.each_with_object({}) do |(name,options), vc|
         vc[name] = options.except(:as, :if, :unless) unless options[:hidden]
         vc[name] = options[:as].visible_columns if options[:as].respond_to?(:visible_columns)
       end

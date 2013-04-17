@@ -93,6 +93,10 @@ describe TheGrid::Builder::Context do
   context "when collects visible columns" do
     let(:parent_scope){ double(:dsl => Proc.new{ column :title; column :name, :hidden => true }) }
 
+    it "returns hash" do
+      build_context(&parent_scope.dsl).visible_columns.should be_kind_of Hash
+    end
+
     it "returns only visible columns" do
       build_context(&parent_scope.dsl).visible_columns.keys.should eql [:title]
     end

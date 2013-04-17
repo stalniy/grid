@@ -23,15 +23,17 @@ module TheGrid
     end
 
     def as_json_with(options)
-      {}.tap do |json|
-        json[:meta], json[:columns] = context.options.except(:delegate, :search_over), context.visible_columns if options[:with_meta]
-        json[:max_page] = api.options[:max_page]
-        json[:items] = context.assemble(api.relation)
+      json = {:max_page => api.options[:max_page], :items => context.assemble(api.relation)}
+      if options[:with_meta]
+        json[:meta] = context.options.except(:delegate, :search_over)
+        json[:columns] = context.visible_columns.map{ |name, options| options.merge :column_name => name }
       end
+      json
     end
 
     def as_json_message(status, message)
       {:status => status, :message => message}
     end
+
   end
 end

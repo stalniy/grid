@@ -9,7 +9,8 @@ describe TheGrid::Builder::Json do
   let(:context) { create_context.tap { |c| c.stub(:assemble => [1,2,3,4]) } }
   let(:params) {{  :cmd => [:sort], :field => :name, :order => :desc }}
 
-  let(:meta) {{ "meta" => {"api_key" => context.options[:api_key]}, "columns" => context.visible_columns.stringify_keys }}
+  let(:meta) {{ "meta" => {"api_key" => context.options[:api_key]}, "columns" => columns }}
+  let(:columns) { context.visible_columns.stringify_keys.map{ |n, o| o.merge "column_name" => n } }
   let(:json_schema) {{ "max_page" => 25, "items" => context.assemble }}
   let(:assembled_result) { JSON.parse(subject.assemble_with(params)) }
 
