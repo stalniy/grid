@@ -22,7 +22,7 @@ module TheGrid
     end
 
     def self.assemble(options, &block)
-      new(options, &block)
+      new(options, &block).instance_eval(&block)
     end
 
     def initialize(options, &block)
@@ -37,11 +37,7 @@ module TheGrid
 
     def grid_for(relation, options = {}, &block)
       context = Context.new(options.merge(:scope => @_scope), &block)
-      @_view_handler = @_view_type.new(relation, context)
-    end
-
-    def assemble(&block)
-      @_view_handler.assemble_with(@_scope.params, &block)
+      @_view_type.new(relation, context)
     end
 
     def method_missing(name, *args, &block)
@@ -52,14 +48,11 @@ module TheGrid
       end
     end
 
-    def to_s; assemble;end
-    def to_str; assemble;end
-
   private
 
     def copy_instance_variables_from(object)
       vars = object.instance_variables.map(&:to_s)
-      vars.each { |name| instance_variable_set(name.to_sym, object.instance_variable_get(name)) }
+      vars.each{ |name| instance_variable_set(name.to_sym, object.instance_variable_get(name)) }
     end
 
   end

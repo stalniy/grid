@@ -28,8 +28,8 @@ module TheGrid
 
     def put_relation_to(csv)
       (1..api.options[:max_page]).each do |page|
-        api.run_command!(:paginate, :page => page, :per_page => BATCH_SIZE)
-        put_records_to(csv, api.relation.dup)
+        relation = api.run_command!(:paginate, :page => page, :per_page => BATCH_SIZE)
+        put_records_to(csv, relation)
       end
     end
 
