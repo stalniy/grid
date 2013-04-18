@@ -7,7 +7,7 @@ It makes much easier to fetch information from database for displaying it using 
 ## Getting started
 
 First of all specify grid in your Gemfile and run `bundle install`.
-After gem is installed you need to run `rails generate grid:install`. This will generate grid initializer file with basic configuration.
+After gem is installed you need to run `rails generate the_grid:install`. This will generate grid initializer file with basic configuration.
 
 ## Usage
 
