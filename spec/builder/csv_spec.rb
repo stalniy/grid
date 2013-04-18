@@ -22,7 +22,7 @@ describe TheGrid::Builder::Csv do
   end
 
   it "processes records in batches if :per_page is missed" do
-    subject.api.relation.stub(:limit => subject.api.relation, :offset => double(:all => []))
+    subject.api.relation.stub(:limit => subject.api.relation, :offset => double(:all => []), :dup => subject.api.relation)
     subject.assemble_with(params.except(:per_page))
   end
 
