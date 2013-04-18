@@ -6,5 +6,5 @@ TheGrid.configure do |config|
   config.default_max_per_page = 25
 
   # Print json response with new lines and tabs
-  config.prettify_json = ActionView::Base.pretty_print_json
+  config.prettify_json = Rails.env.development?
 end
