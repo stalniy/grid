@@ -2,14 +2,14 @@ require 'spec_helper'
 require_relative 'view_builder_helper'
 
 describe TheGrid::Builder::Csv do
-  subject{ TheGrid::Builder::Csv.new(records, build_context) }
+  subject{ TheGrid::Builder::Csv.new(double(:all => records), build_context) }
 
   include_examples "for Grid View Builder"
   before(:each) { subject.api.stub(:compose!){ subject.api.options[:max_page] = 25 } }
 
   let(:record)  {{ :id => 1, :name => "Name", :status => "Active", :text => "Text" }}
   let(:records) {[ record, record, record ]}
-  let(:params)  {{ :cmd => [:sort], :field => :name, :order => :desc, :per_page => 10 }}
+  let(:params)  {{ :cmd => [:sort], :field => :name, :order => :desc, :per_page => 1000 }}
 
   it "generates expected csv string" do
     subject.assemble_with(params).should eql generate_csv(records, subject.context.options[:headers])
@@ -19,6 +19,11 @@ describe TheGrid::Builder::Csv do
     subject.context.stub(:options => {})
     headers = record.keys.map{|c| c.to_s.titleize }
     subject.assemble_with(params).should eql generate_csv(records, headers)
+  end
+
+  it "processes records in batches if :per_page is missed" do
+    subject.api.relation.stub(:limit => subject.api.relation, :offset => double(:all => []))
+    subject.assemble_with(params.except(:per_page))
   end
 
 

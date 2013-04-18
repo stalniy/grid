@@ -13,45 +13,41 @@ module TheGrid
 
     def assemble_with(params)
       options = params.merge context.params
-      api.compose!(options.reverse_merge! :per_page => false)
-      rows = need_batch?(options) ? generate_rows_lazy_for(api.relation) : generate_rows_for(api.relation)
-      generate_csv_for rows
+      api.compose!(options.reverse_merge :per_page => false)
+      generate_csv_with(options)
     end
 
   private
 
-
-    def generate_csv_for(rows)
+    def generate_csv_with(options)
       CSV.generate do |csv|
         csv << headers
-        rows.each { |row| csv << row }
+        if options.has_key?(:per_page)
+          put_rows_to(csv, api.relation.all)
+        else
+          put_relation_to(csv, api.relation)
+        end
       end
     end
 
-    def generate_rows_lazy_for(relation)
+    def put_relation_to(csv, relation)
       batch_offset = 0
-      relation = api.relation.limit(BATCH_SIZE)
-      records = relation.all
+      relation = relation.limit(BATCH_SIZE)
+      records = relation.dup.all
 
-      rows = []
-      while relation.any?
-        rows << context.assemble(relation).map(&:values)
+      while records.any?
+        put_rows_to(csv, records)
         batch_offset += BATCH_SIZE
-        relation.offset(batch_offset)
+        records = relation.offset(batch_offset).all
       end
-      rows
     end
 
-    def generate_rows_for(relation)
-      context.assemble(relation).map(&:values)
+    def put_rows_to(csv, records)
+      context.assemble(records).each{ |row| csv << row.values }
     end
 
     def headers
       context.options[:headers] || context.columns.keys.map { |col| col.to_s.titleize }
-    end
-
-    def need_batch?(options)
-      options[:per_page] === false
     end
 
   end
