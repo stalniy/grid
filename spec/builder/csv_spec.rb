@@ -2,14 +2,15 @@ require 'spec_helper'
 require_relative 'view_builder_helper'
 
 describe TheGrid::Builder::Csv do
-  subject{ TheGrid::Builder::Csv.new(double(:all => records), build_context) }
+  subject{ TheGrid::Builder::Csv.new(relation, build_context) }
 
   include_examples "for Grid View Builder"
-  before(:each) { subject.api.stub(:compose!){ subject.api.options[:max_page] = 25 } }
+  before(:each) { subject.api.stub(:compose!){ subject.api.options[:max_page] = 1 } }
 
-  let(:record)  {{ :id => 1, :name => "Name", :status => "Active", :text => "Text" }}
-  let(:records) {[ record, record, record ]}
-  let(:params)  {{ :cmd => [:sort], :field => :name, :order => :desc, :per_page => 1000 }}
+  let(:relation) { double.as_null_object }
+  let(:record)   {{ :id => 1, :name => "Name", :status => "Active", :text => "Text" }}
+  let(:records)  {[ record, record, record ]}
+  let(:params)   {{ :cmd => [:sort], :field => :name, :order => :desc, :per_page => subject.class.const_get("BATCH_SIZE") }}
 
   it "generates expected csv string" do
     subject.assemble_with(params).should eql generate_csv(records, subject.context.options[:headers])
@@ -21,9 +22,9 @@ describe TheGrid::Builder::Csv do
     subject.assemble_with(params).should eql generate_csv(records, headers)
   end
 
-  it "processes records in batches if :per_page is missed" do
-    subject.api.relation.stub(:limit => subject.api.relation, :offset => double(:all => []), :dup => subject.api.relation)
-    subject.assemble_with(params.except(:per_page))
+  it "generates csv records in batches" do
+    subject.api.should_receive(:run_command!).with(:paginate, :page => 1, :per_page => params[:per_page])
+    subject.assemble_with(params);
   end
 
 

@@ -13,7 +13,7 @@ module TheGrid
 
     def assemble_with(params)
       options = params.merge context.params
-      api.compose!(options.reverse_merge :per_page => false)
+      api.compose!(options.merge :per_page => BATCH_SIZE)
       generate_csv_with(options)
     end
 
@@ -22,27 +22,18 @@ module TheGrid
     def generate_csv_with(options)
       CSV.generate do |csv|
         csv << headers
-        if options.has_key?(:per_page)
-          put_rows_to(csv, api.relation.all)
-        else
-          put_relation_to(csv, api.relation)
-        end
+        put_relation_to(csv)
       end
     end
 
-    def put_relation_to(csv, relation)
-      batch_offset = 0
-      relation = relation.limit(BATCH_SIZE)
-      records = relation.dup.all
-
-      while records.any?
-        put_rows_to(csv, records)
-        batch_offset += BATCH_SIZE
-        records = relation.offset(batch_offset).all
+    def put_relation_to(csv)
+      (1..api.options[:max_page]).each do |page|
+        api.run_command!(:paginate, :page => page, :per_page => BATCH_SIZE)
+        put_records_to(csv, api.relation.dup)
       end
     end
 
-    def put_rows_to(csv, records)
+    def put_records_to(csv, records)
       context.assemble(records).each{ |row| csv << row.values }
     end
 
