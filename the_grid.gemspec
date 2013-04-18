@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   s.description = <<-EOF
 Provides json API for building ActiveRecord::Relation's.  It makes much easier to fetch information from database for displaying it using JavaScript MV* based frameworks such as Knockout, Backbone, Angular, etc.
 
-Tags: json, grid, api, grid builder, activerecord relation builder, relation
+Tags: json, csv, grid, api, grid builder, activerecord relation builder, relation
 EOF
 
   s.post_install_message = <<-_MSG_
