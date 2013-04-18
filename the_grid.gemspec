@@ -13,10 +13,11 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
 
   s.description = <<-EOF
-Provides json API for building ActiveRecord::Relation's.  It makes much easier to fetch information from database for displaying it using JavaScript MV* based frameworks such as Knockout, Backbone, Angular, etc.
+    Provides API for building response based on ActiveRecord::Relation objects (json, csv, even using custom view builder).
+    It makes much easier to fetch information from database for displaying it for example using JavaScript MV* based frameworks (such as Knockout, Backbone, Angular, etc), in csv format or even with any custom format.
 
-Tags: json, csv, grid, api, grid builder, activerecord relation builder, relation
-EOF
+    Tags: json, csv, grid, api, grid builder, activerecord relation builder, relation
+  EOF
 
   s.post_install_message = <<-_MSG_
     Columns' definition in json response is changed
