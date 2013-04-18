@@ -1,7 +1,7 @@
 Yet Another Grid
 =========
 
-This plugin is designed to provide API for building json response based on `ActiveRecord::Relation` objects.
+This plugin is designed to provide API for building response based on `ActiveRecord::Relation` objects (json, csv, even using custom view builder).
 It makes much easier to fetch information from database for displaying it using JavaScript MV* based frameworks such as Knockout, Backbone, Angular, etc.
 
 ## Getting started
@@ -36,6 +36,8 @@ grid_for @articles, :per_page => 25 do
   column(:author)     { |a| a.author.full_name }
 end
 ```
+
+The same grid defenition can be used with different formats.
 
 ## API
 
@@ -422,6 +424,38 @@ grid_for @groups, :per_page => 2 do
   end
 end
 ```
+#### CSV builder
+
+It's possible to generate csv using grid views.
+The main power is that this view builder also responds to also the api request parameters except pagination.
+So, it's possible to filter records for output csv. All what you need is just create a simple view:
+```ruby
+# app/views/products/index.csv.grid_builder
+grid_for @products do
+  column :title
+  column :qty
+  column :created_at
+end
+```
+And in your controller
+```ruby
+# app/controllers/products_controller.rb
+class ProductsController < ApplicationController
+  respond_to :csv, :html
+
+  def index
+    @products = Product.active
+    respond_with @products
+  end
+end
+```
+
+Then you can send requests like:
+```
+http://your.domain.com/route.csv?cmd[]=filter&filters[is_active]=1
+```
+and will get csv file which contains only filtered active products.
+
 ## License
 
 Released under the [MIT License](http://www.opensource.org/licenses/MIT)
