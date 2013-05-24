@@ -37,7 +37,7 @@ module TheGrid
 
     def grid_for(relation, options = {}, &block)
       context = Context.new(options.merge(:scope => @_scope), &block)
-      @_view_type.new(relation, context)
+      @_view_type.new(relation, context).assemble_with(@_scope.params)
     end
 
     def method_missing(name, *args, &block)
