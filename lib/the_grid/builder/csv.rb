@@ -13,7 +13,7 @@ module TheGrid
 
     def assemble_with(params)
       options = params.merge context.params
-      api.compose!(options.merge :per_page => BATCH_SIZE)
+      api.compose!(options.merge :per_page => BATCH_SIZE) if api.relation.respond_to?(:except)
       generate_csv_with(options)
     end
 
