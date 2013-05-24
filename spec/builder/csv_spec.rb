@@ -13,13 +13,13 @@ describe TheGrid::Builder::Csv do
   let(:params)   {{ :cmd => [:sort], :field => :name, :order => :desc, :per_page => subject.class.const_get("BATCH_SIZE") }}
 
   it "generates expected csv string" do
-    subject.assemble_with(params).should eql generate_csv(records, subject.context.options[:headers])
+    subject.assemble_with(params).should eql generate_csv(records, subject.context.options[:titles])
   end
 
-  it "uses titleized column names if headers are not specified" do
+  it "uses titleized column names if titles are not specified" do
     subject.context.stub(:options => {})
-    headers = record.keys.map{|c| c.to_s.titleize }
-    subject.assemble_with(params).should eql generate_csv(records, headers)
+    titles = record.keys.map{|c| c.to_s.titleize }
+    subject.assemble_with(params).should eql generate_csv(records, titles)
   end
 
   it "generates csv records in batches" do
@@ -28,16 +28,16 @@ describe TheGrid::Builder::Csv do
   end
 
 
-  def generate_csv(records, headers)
+  def generate_csv(records, titles)
     CSV.generate do |csv|
-      csv << headers
+      csv << titles
       records.each{ |item| csv << item.values }
     end
   end
 
   def build_context
     TheGrid::Builder::Context.new do
-      headers "Id", "Title", "Status", "Description"
+      titles "Id", "Title", "Status", "Description"
       column :name
       column :status
       column :text
