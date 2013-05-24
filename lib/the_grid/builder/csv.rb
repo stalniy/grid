@@ -22,8 +22,12 @@ module TheGrid
     def generate_csv_with(options)
       CSV.generate do |csv|
         csv << headers
-        put_relation_to(csv)
+        api.relation.kind_of?(Array) ? put_data_to(csv) : put_relation_to(csv)
       end
+    end
+    
+    def put_data_to(csv)
+      put_records_to(csv, api.relation)
     end
 
     def put_relation_to(csv)
