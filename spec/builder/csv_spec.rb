@@ -5,7 +5,8 @@ describe TheGrid::Builder::Csv do
   subject{ TheGrid::Builder::Csv.new(relation, build_context) }
 
   include_examples "for Grid View Builder"
-  before(:each) { subject.api.stub(:compose!){ subject.api.options[:max_page] = 1 } }
+  before(:each) { subject.api.stub(:compose!) }
+  before(:each) { subject.api.options[:max_page] = 1 }
 
   let(:relation) { double.as_null_object }
   let(:record)   {{ :id => 1, :name => "Name", :status => "Active", :text => "Text" }}
@@ -23,7 +24,7 @@ describe TheGrid::Builder::Csv do
   end
 
   it "generates csv records in batches" do
-    subject.api.should_receive(:run_command!).with(:paginate, :page => 1, :per_page => params[:per_page])
+    subject.api.should_receive(:run_command!).with(:paginate, :page => 1, :per_page => params[:per_page], :size => subject.api.options[:max_page] * params[:per_page])
     subject.assemble_with(params);
   end
 

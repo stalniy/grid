@@ -6,6 +6,7 @@ module TheGrid
       {}.tap do |o|
         o[:page] = params[:page].to_i
         o[:page] = 1 if o[:page] <= 0
+        o[:size] = params[:size]
 
         o[:per_page] = params[:per_page].to_i
         o[:per_page] = self.class.default_per_page if o[:per_page] <= 0
@@ -18,7 +19,8 @@ module TheGrid
 
     def calculate_max_page_for(relation, params)
       params = configure(relation, params)
-      (relation.except(:limit, :offset).count / params[:per_page].to_f).ceil
+      total_count = params[:size].present? ? params[:size] : relation.except(:limit, :offset, :includes).count
+      (total_count / params[:per_page].to_f).ceil
     end
 
     def contextualize(relation, params)

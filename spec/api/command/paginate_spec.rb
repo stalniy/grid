@@ -35,6 +35,11 @@ describe TheGrid::Api::Command::Paginate do
     it "should respect specified per_page option" do
       subject.calculate_max_page_for(relation, :per_page => 15).should eql 2
     end
+
+    it "does not count rows if size options is present" do
+      relation.should_not_receive(:count)
+      subject.calculate_max_page_for(relation, :per_page => 15, :page => 1, :size => 100)
+    end
   end
 
   it "calculates max page when prepares context" do
