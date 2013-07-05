@@ -36,7 +36,7 @@ module TheGrid
     end
 
     def command_delegated?(cmd)
-      options[:delegated_commands].has_key?(cmd.to_s)
+      options[:delegated_commands] && options[:delegated_commands].has_key?(cmd.to_s)
     end
 
     def configure(params)

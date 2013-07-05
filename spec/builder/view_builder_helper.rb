@@ -1,10 +1,11 @@
 shared_examples "for Grid View Builder" do
-  before(:each) { subject.context.stub(:assemble => records) }
+  before(:each) { context.stub(:assemble => records) }
+  before(:each) { TheGrid::Api.any_instance.stub(:compose!) }
+  before(:each) { TheGrid::Api.any_instance.stub(:options => api_options) }
 
-  it { should respond_to(:assemble_with) }
+  let(:record)   {{ :id => 1, :name => "Name", :status => "Active", :text => "Text" }}
+  let(:records)  {[ record, record, record ]}
+  let(:api_options){{ :max_page => 25 }}
 
-  it "merges context with params" do
-    subject.api.should_receive(:compose!).with(params.merge subject.context.options)
-    subject.assemble_with(params)
-  end
+  it { should respond_to(:assemble) }
 end

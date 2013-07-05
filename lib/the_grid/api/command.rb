@@ -1,6 +1,14 @@
 module TheGrid
   class Api::Command
 
+    autoload :BatchRemove, 'the_grid/api/command/batch_remove'
+    autoload :BatchUpdate, 'the_grid/api/command/batch_update'
+    autoload :Filter,      'the_grid/api/command/filter'
+    autoload :Paginate,    'the_grid/api/command/paginate'
+    autoload :Search,      'the_grid/api/command/search'
+    autoload :Sort,        'the_grid/api/command/sort'
+
+
     def self.find(cmd)
       @@commands ||= {}
       @@commands[cmd] ||= build(cmd)

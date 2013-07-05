@@ -2,6 +2,10 @@ module TheGrid
   class Builder
     private_class_method :new
 
+    autoload :Context, 'the_grid/builder/context'
+    autoload :Csv,     'the_grid/builder/csv'
+    autoload :Json,    'the_grid/builder/json'
+
     def self.call(template)
       source = if template.source.empty?
         File.read(template.identifier)
@@ -37,7 +41,7 @@ module TheGrid
 
     def grid_for(relation, options = {}, &block)
       context = Context.new(options.merge(:scope => @_scope), &block)
-      @_view_type.new(relation, context).assemble_with(@_scope.params)
+      @_view_type.assemble(context, :on => relation, :with => @_scope.params)
     end
 
     def method_missing(name, *args, &block)
@@ -53,6 +57,33 @@ module TheGrid
     def copy_instance_variables_from(object)
       vars = object.instance_variables.map(&:to_s)
       vars.each{ |name| instance_variable_set(name.to_sym, object.instance_variable_get(name)) }
+    end
+
+
+    module Base
+
+      def compose(records, params)
+        api = ::TheGrid::Api.new(records)
+        api.compose!(params)
+        api
+      end
+
+      def assemble(context, options)
+        options.assert_valid_keys(:on, :with)
+        params = options[:with].merge context.params
+        build(context, :for => options[:on], :with => params)
+      rescue ArgumentError => error
+        stringify :status => 'error', :message => error.message
+      end
+
+      def stringify(data)
+        data.inspect
+      end
+
+      def build
+        raise NotImplementedError
+      end
+
     end
 
   end

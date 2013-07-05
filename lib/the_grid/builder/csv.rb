@@ -1,49 +1,37 @@
 require 'csv'
 
 module TheGrid
-  class Builder::Csv
-    attr_reader :api, :context
-
+  module Builder::Csv
+    extend self, Builder::Base
     BATCH_SIZE = 1000
 
-    def initialize(relation, context)
-      @api = TheGrid::Api.new(relation)
-      @context = context
-    end
-
-    def assemble_with(params)
-      options = params.merge context.params
-      api.compose!(options.merge :per_page => BATCH_SIZE) if api.relation.respond_to?(:connection)
-      generate_csv_with(options)
+    def build(context, options)
+      records, params = options.values_at(:for, :with)
+      options.merge! :per_page => BATCH_SIZE if records.respond_to?(:connection)
+      api = compose(records, options)
+      CSV.generate do |csv|
+        csv << read_titles_from(context)
+        api.relation.respond_to?(:connection) ? put(context, :to => csv, :with => api) : put_this(context, :to => csv, :with => records)
+      end
     end
 
   private
 
-    def generate_csv_with(options)
-      CSV.generate do |csv|
-        csv << headers
-        api.relation.kind_of?(Array) ? put_data_to(csv) : put_relation_to(csv)
-      end
-    end
-
-    def put_data_to(csv)
-      put_records_to(csv, api.relation)
-    end
-
-    def put_relation_to(csv)
+    def put(context, options)
+      api, csv = options.values_at(:with, :to)
       pages = api.options[:max_page]
       (1..pages).each do |page|
         relation = api.run_command!(:paginate, :page => page, :per_page => BATCH_SIZE, :size => pages * BATCH_SIZE)
-        put_records_to(csv, relation)
+        put_this(context, :to => csv, :with => relation)
       end
     end
 
-    def put_records_to(csv, records)
-      context.assemble(records).each{ |row| csv << row.values }
+    def put_this(context, options)
+      context.assemble(options[:with]).each{ |row| options[:to] << row.values }
     end
 
-    def headers
-      context.options[:titles] || context.columns.keys.map { |col| col.to_s.titleize }
+    def read_titles_from(context)
+      context.options[:titles] || context.columns.keys.map{ |col| col.to_s.titleize }
     end
 
   end

@@ -2,22 +2,23 @@ require 'spec_helper'
 require_relative 'view_builder_helper'
 
 describe TheGrid::Builder::Json do
-  subject{ TheGrid::Builder::Json.new(Object.new, build_context) }
+  subject{ TheGrid::Builder::Json }
 
   include_examples "for Grid View Builder"
-  before(:each) { subject.api.stub(:compose!){ subject.api.options[:max_page] = 25 } }
 
+  let(:context) { build_context }
   let(:records) {[ 1, 2, 3, 4 ]}
   let(:params)  {{ :cmd => [:sort], :field => :name, :order => :desc }}
 
-  let(:meta) {{ "meta" => {"api_key" => subject.context.options[:api_key]}, "columns" => columns }}
-  let(:columns) { subject.context.visible_columns.stringify_keys.map{ |n, o| o.merge "name" => n } }
-  let(:json_schema) {{ "max_page" => 25, "items" => subject.context.assemble }}
-  let(:assembled_result) { JSON.parse(subject.assemble_with(params)) }
+  let(:meta) {{ "meta" => {"api_key" => context.options[:api_key]}, "columns" => columns }}
+  let(:columns) { context.visible_columns.stringify_keys.map{ |n, o| o.merge "name" => n } }
+  let(:json_schema) {{ "max_page" => 25, "items" => context.assemble(records) }}
+  let(:assembled_result) { JSON.parse(subject.assemble(context, :on => Object.new, :with => params)) }
+
 
   it "merges params with context options" do
-    subject.api.should_receive(:compose!).with(params.merge subject.context.options)
-    subject.assemble_with params
+    TheGrid::Api.any_instance.should_receive(:compose!).with(params.merge context.options)
+    subject.assemble(context, :on => Object.new, :with => params)
   end
 
   it "generates json with meta information" do
@@ -30,7 +31,7 @@ describe TheGrid::Builder::Json do
   end
 
   it "generates json notification when get wrong argument" do
-    subject.api.stub(:compose!) { raise ArgumentError, "my message" }
+    TheGrid::Api.any_instance.stub(:compose!) { raise ArgumentError, "my message" }
     assembled_result.should eql "status" => "error", "message" => "my message"
   end
 

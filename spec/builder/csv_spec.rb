@@ -2,30 +2,28 @@ require 'spec_helper'
 require_relative 'view_builder_helper'
 
 describe TheGrid::Builder::Csv do
-  subject{ TheGrid::Builder::Csv.new(relation, build_context) }
+  subject{ TheGrid::Builder::Csv }
 
   include_examples "for Grid View Builder"
-  before(:each) { subject.api.stub(:compose!) }
-  before(:each) { subject.api.options[:max_page] = 1 }
 
-  let(:relation) { double.as_null_object }
-  let(:record)   {{ :id => 1, :name => "Name", :status => "Active", :text => "Text" }}
-  let(:records)  {[ record, record, record ]}
-  let(:params)   {{ :cmd => [:sort], :field => :name, :order => :desc, :per_page => subject.class.const_get("BATCH_SIZE") }}
+  let(:api_options) {{ :max_page => 1 }}
+  let(:context)  { build_context }
+  let(:relation) { double(:connection => double.as_null_object).as_null_object }
+  let(:params)   {{ :cmd => [:sort], :field => :name, :order => :desc, :per_page => subject.const_get("BATCH_SIZE") }}
 
   it "generates expected csv string" do
-    subject.assemble_with(params).should eql generate_csv(records, subject.context.options[:titles])
+    subject.assemble(context, :on => relation, :with => params).should eql generate_csv(records, context.options[:titles])
   end
 
   it "uses titleized column names if titles are not specified" do
-    subject.context.stub(:options => {})
+    context.stub(:options => {})
     titles = record.keys.map{|c| c.to_s.titleize }
-    subject.assemble_with(params).should eql generate_csv(records, titles)
+    subject.assemble(context, :on => relation, :with => params).should eql generate_csv(records, titles)
   end
 
   it "generates csv records in batches" do
-    subject.api.should_receive(:run_command!).with(:paginate, :page => 1, :per_page => params[:per_page], :size => subject.api.options[:max_page] * params[:per_page])
-    subject.assemble_with(params);
+    TheGrid::Api.any_instance.should_receive(:run_command!).with(:paginate, :page => 1, :per_page => params[:per_page], :size => api_options[:max_page] * params[:per_page])
+    subject.assemble(context, :on => relation, :with => params)
   end
 
 
