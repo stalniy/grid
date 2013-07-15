@@ -48,6 +48,12 @@ module TheGrid
       end
     end
 
+    def column_titles
+      self.options[:titles] ||= columns.flat_map do |name, options|
+        options[:as].kind_of?(self.class) ? options[:as].column_titles : options.fetch(:title, name.to_s.titleize)
+      end
+    end
+
     def assemble(records)
       records.map{ |record| assemble_row_for(record) }
     end

@@ -10,7 +10,7 @@ module TheGrid
       options.merge! :per_page => BATCH_SIZE if records.respond_to?(:connection)
       api = compose(records, options)
       CSV.generate do |csv|
-        csv << read_titles_from(context)
+        csv << context.column_titles
         api.relation.respond_to?(:connection) ? put(context, :to => csv, :with => api) : put_this(context, :to => csv, :with => records)
       end
     end
@@ -27,11 +27,23 @@ module TheGrid
     end
 
     def put_this(context, options)
-      context.assemble(options[:with]).each{ |row| options[:to] << row.values }
+      context.assemble(options[:with]).each do |row|
+        flatten(row).each{ |row| options[:to] << row }
+      end
     end
 
-    def read_titles_from(context)
-      context.options[:titles] || context.columns.keys.map{ |col| col.to_s.titleize }
+    def flatten(row)
+      # TODO: optimize it
+      row_values, row_nested_values = [], []
+      row.each do |field, value|
+        if value.kind_of?(Array)
+          row_nested_values += value.flat_map{ |r| flatten(r) }
+        else
+          row_values << value 
+        end
+      end
+      return [ row_values ] if row_nested_values.empty?
+      row_nested_values.each{ |nested_values| nested_values.unshift(*row_values) }
     end
 
   end

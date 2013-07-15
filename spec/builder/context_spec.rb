@@ -88,6 +88,11 @@ describe TheGrid::Builder::Context do
       context = build_context{ scope_for(:articles, :as => :children, &dsl) }
       context.columns[:children][:as].should be_kind_of subject
     end
+
+    it "returns titles for columns from attributes" do
+      context = build_context{ column(:id, :title => "Name") }
+      context.column_titles.should eql %w{Name}
+    end
   end
 
   context "when collects visible columns" do
