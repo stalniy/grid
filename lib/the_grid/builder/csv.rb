@@ -7,11 +7,11 @@ module TheGrid
 
     def build(context, options)
       records, params = options.values_at(:for, :with)
-      options.merge! :per_page => BATCH_SIZE if records.respond_to?(:connection)
+      options.merge!(:per_page => records.kind_of?(Array) ? false : BATCH_SIZE)
       api = compose(records, options)
       CSV.generate do |csv|
         csv << context.column_titles
-        api.relation.respond_to?(:connection) ? put(context, :to => csv, :with => api) : put_this(context, :to => csv, :with => records)
+        options[:per_page] ? put(context, :to => csv, :with => api) : put_this(context, :to => csv, :with => records)
       end
     end
 
