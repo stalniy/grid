@@ -7,11 +7,11 @@ module TheGrid
 
     def build(context, options)
       records, params = options.values_at(:for, :with)
-      options.merge!(:per_page => records.kind_of?(Array) ? false : BATCH_SIZE)
-      api = compose(records, options)
+      params.merge!(:per_page => records.kind_of?(Array) ? false : BATCH_SIZE)
+      api = compose(records, params)
       CSV.generate do |csv|
         csv << context.column_titles
-        options[:per_page] ? put(context, :to => csv, :with => api) : put_this(context, :to => csv, :with => records)
+        params[:per_page] ? put(context, :to => csv, :with => api) : put_this(context, :to => csv, :with => records)
       end
     end
 
@@ -21,8 +21,8 @@ module TheGrid
       api, csv = options.values_at(:with, :to)
       pages = api.options[:max_page]
       (1..pages).each do |page|
-        relation = api.run_command!(:paginate, :page => page, :per_page => BATCH_SIZE, :size => pages * BATCH_SIZE)
-        put_this(context, :to => csv, :with => relation)
+        options[:with] = api.run_command!(:paginate, :page => page, :per_page => BATCH_SIZE, :size => pages * BATCH_SIZE)
+        put_this(context, options)
       end
     end
 
@@ -39,7 +39,7 @@ module TheGrid
         if value.kind_of?(Array)
           row_nested_values += value.flat_map{ |r| flatten(r) }
         else
-          row_values << value 
+          row_values << value
         end
       end
       return [ row_values ] if row_nested_values.empty?

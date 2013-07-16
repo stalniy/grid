@@ -30,6 +30,13 @@ describe TheGrid::Builder::Csv do
     subject.assemble(context, :on => relation, :with => params).should eql generate_csv(2.times.map{ |i| record.merge child_record(i + 1) }, context.column_titles)
   end
 
+  it "generates csv for array" do
+    context = build_context
+    object  = build_double(1, :name, :status, :text)
+    object.stub(:children => [])
+    subject.assemble(context, :on => [ object ], :with => params).should eql generate_csv([ object ], context.column_titles)
+  end
+
 
   def generate_csv(records, titles)
     CSV.generate do |csv|

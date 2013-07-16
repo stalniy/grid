@@ -15,4 +15,13 @@ shared_examples "for Grid View Builder" do
   def record(id = nil)
   	{ :id => id || 1, :name => "Name #{id}", :status => "Active", :text => "Text" }
   end
+
+  def build_double(id, *methods)
+    impl = methods.each_with_object({ :id => id }) do |method, object|
+      object[method] = "#{method.to_s.titleize} #{id}"
+    end
+    impl[:values] = impl.values
+    double(impl)
+  end
+
 end
