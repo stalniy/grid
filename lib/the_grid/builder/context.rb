@@ -104,16 +104,15 @@ module TheGrid
     end
 
     def may_assemble?(record, options)
-      condition = options[:if] || options[:unless]
+      column_or_proc = options[:if] || options[:unless]
 
-      if condition.is_a? Symbol
-        result = assemble_column_for(record, condition, columns[condition])
-      elsif condition.respond_to?(:call)
-        result = condition.call(record)
-      else
-        result = true
+      result = true
+      if column_or_proc.is_a? Symbol
+        result = assemble_column_for(record, column_or_proc, columns[column_or_proc])
+      elsif column_or_proc.respond_to?(:call)
+        result = column_or_proc.call(record)
       end
-      options[:unless].present? ? !result : result
+      result.present? ^ options.has_key?(:unless)
     end
 
   end
