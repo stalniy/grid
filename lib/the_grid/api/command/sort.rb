@@ -3,7 +3,7 @@ module TheGrid
     def configure(relation, params)
       {}.tap do |o|
         o[:field] = params[:field]
-        o[:field] = "#{relation.table_name}.#{o[:field]}" if relation.table[o[:field]].present?
+        o[:field] = "#{relation.table_name}.#{o[:field]}" if relation.column_names.include?(params[:field])
 
         o[:order] = params[:order]
         o[:order] = 'asc' unless %w{ asc desc }.include?(o[:order])
