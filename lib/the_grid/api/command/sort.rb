@@ -11,7 +11,7 @@ module TheGrid
     end
 
     def run_on(relation, params)
-      relation.order("#{params[:field]} #{params[:order]}")
+      relation.order("#{params[:field]} #{params[:order]}") if params[:field]
     end
   end
 end

@@ -44,6 +44,16 @@ describe TheGrid::Api::Command::Filter do
 
   after(:each) { subject.execute_on(relation, :filters => filters) }
 
+  context "when filters contain association's column" do
+    let(:filters){ { 'user.email' => 'test@i.ua' } }
+
+    it "filters by using correct columns" do
+      relation.stub_chain(:reflections, :[], :klass, :arel_table).and_return(table)
+      relation.reflections.should_receive(:[]).with(:user)
+      table.should_receive(:[]).with('email')
+    end
+  end
+
   context "when filters are missed" do
     let(:filters){ Hash.new }
 

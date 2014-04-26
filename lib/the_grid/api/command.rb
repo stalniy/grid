@@ -52,5 +52,17 @@ module TheGrid
       params
     end
 
+    def column_for(relation, field_name)
+      table, field = field_name.to_s.split('.')
+
+      if field.blank?
+        relation.table[field_name]
+      elsif relation.reflections[table.to_sym]
+        relation.reflections[table.to_sym].klass.arel_table[field]
+      else
+        raise "Unable to find column for #{field_name}"
+      end
+    end
+
   end
 end
