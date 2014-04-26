@@ -11,7 +11,8 @@ module TheGrid
     end
 
     def run_on(relation, params)
-      relation.order("#{params[:field]} #{params[:order]}") if params[:field]
+      return relation if params[:field].blank?
+      relation.order("#{params[:field]} #{params[:order]}")
     end
   end
 end
